@@ -1,0 +1,16 @@
+{
+  "name": "Akila",
+  "author": "CookieKastanie",
+  "version": "0.1.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CookieKastanie/Akila.git"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CookieKastanie/Akila/issues"
+  },
+  "homepage": "https://github.com/CookieKastanie/Akila#readme"
+}
