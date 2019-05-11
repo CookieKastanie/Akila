@@ -1,7 +1,7 @@
 export class Bank {
   constructor(repertoire, listeNomFichiers, options){
     this.setDirectory(repertoire);
-    this.setFileListe(listeNomFichiers);
+    this.setFileList(listeNomFichiers);
     this.setOptions(options);
   }
 
@@ -10,7 +10,7 @@ export class Bank {
     return this;
   }
 
-  setFileListe(listeNomFichiers = []){
+  setFileList(listeNomFichiers = []){
     this.noms = listeNomFichiers.map(str => str.trim());
     return this;
   }
