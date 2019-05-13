@@ -1,3 +1,3 @@
 # Akila
 
-> Créé par Cookiekastanie
+> Créé par CookieKastanie

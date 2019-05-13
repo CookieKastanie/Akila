@@ -18,7 +18,7 @@ export class Camera {
 
   getMatrix(){
     //Matrix4.lookAt(this.camMatrix, this.eye, this.center, this.up);
-    return Matrix4.mult(this.finalMat, this.projMatrix, this.camMatrix);
+    return Matrix4.multiply(this.finalMat, this.projMatrix, this.camMatrix);
   }
 }
 
@@ -137,7 +137,7 @@ export class FirstPersonCamera extends Camera {
 
     Matrix4.identity(this.temp);
 
-    Matrix4.mult(this.temp,
+    Matrix4.multiply(this.temp,
       Matrix4.fromRotation(Matrix4.identity(this.temp2), this.aX, this.xAxis),
       Matrix4.fromRotation(Matrix4.identity(this.temp3), this.aY, this.yAxis)
     );
@@ -148,7 +148,7 @@ export class FirstPersonCamera extends Camera {
     this.camMatrix[13] = this.y;
     this.camMatrix[14] = this.z - 1;
 
-    Matrix4.mult(this.camMatrix, this.temp, this.camMatrix);
+    Matrix4.multiply(this.camMatrix, this.temp, this.camMatrix);
 
     this.camMatrix[14] += 1;
 

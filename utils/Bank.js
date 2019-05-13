@@ -30,12 +30,15 @@ export class Bank {
        this.mediaType === "video" ||
        this.mediaType === "audio")
        this.requeteMode = "media";
+    //else if(this.mediaType === "font") this.requeteMode = "font";
     else this.requeteMode = "file";
 
     if(this.mediaType !== "arrayBuffer" &&
        this.mediaType !== "blob" &&
        this.mediaType !== "formData" &&
-       this.mediaType !== "json" && this.mediaType === "text"
+       this.mediaType !== "json" &&
+       //this.mediaType !== "font" &&
+       this.mediaType === "text"
      ) this.mediaType = "text";
 
     this.fichiers = new Object();
@@ -51,6 +54,14 @@ export class Bank {
     });
   }
 
+  /*async loadFont(nom){
+    const font = new FontFace(nom, `${this.rep}/${nom}${this.extension}`);
+    return font.load()
+    .then(() => {
+      return font;
+    });
+  }*/
+
   async loadFile(nom){
     return fetch(`${this.rep}/${nom}${this.extension}`)
     .then(data => {
@@ -59,36 +70,37 @@ export class Bank {
     })
   }
 
-  async load(stateEvent){
+  async load(stateEvent, endMessage = ""){
     this.initForLoad();
     if(typeof stateEvent !== "function") stateEvent = (p) => {};
 
     return new Promise(async (resolve, reject) => {
       if(this.noms.length == 0) {
-        stateEvent(100);
+        stateEvent(100, endMessage);
         resolve();
       } else {
         let nbTotalFichier = this.noms.length;
 
-        stateEvent(0);
-
         let requete;
         if(this.requeteMode === "media") requete = this.loadMedia.bind(this);
-        else requete = this.loadFile.bind(this);;
+        //else if(this.requeteMode === "font") requete = this.loadFont.bind(this);
+        else requete = this.loadFile.bind(this);
 
         for (const nom of this.noms) {
+          stateEvent(Math.floor((this.noms.length - nbTotalFichier) / this.noms.length * 100), nom);
+
           await requete(nom)
           .then(async file => {
             if(typeof this.treatment === "function") this.fichiers[nom] = await this.treatment(file);
             else this.fichiers[nom] = file;
             --nbTotalFichier;
-
-            stateEvent(Math.floor((this.noms.length - nbTotalFichier) / this.noms.length * 100));
           })
           .catch(e => {
             console.warn(`Impossible de charger le fichier '${this.rep}/${nom}${this.extension}'\n${e}`);
           });
         }
+
+        stateEvent(100, endMessage);
 
         resolve();
       }
