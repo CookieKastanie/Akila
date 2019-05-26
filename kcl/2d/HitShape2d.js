@@ -3,7 +3,8 @@ import { Face2d } from './Face2d';
 
 export class HitShape2d {
     constructor(vertices = [], indices = [], orientation = HitShape2d.OUT) {
-        this.orientation = orientation
+        this.id = HitShape2d.MAX_ID++;
+        this.orientation = orientation;
         this.faces = new Array();
 
         for (let i = 0; i < indices.length; i += 2) {
@@ -18,5 +19,6 @@ export class HitShape2d {
     }
 }
 
+HitShape2d.MAX_ID = 0;
 HitShape2d.IN = "IN";
 HitShape2d.OUT = "OUT";
