@@ -128,8 +128,12 @@ export class StaticField2d {
         x -= w / 2;
         y -= h / 2;
 
-        for (let _y = y; _y < (h + y); _y += this.unit) { 
-            for (let _x = x; _x < (w + x); _x += this.unit) {
+        /*const maxX = Math.floor(x / this.unit);
+        const */
+
+
+        for (let _y = y; _y <= (h + y); _y += this.unit) { 
+            for (let _x = x; _x <= (w + x); _x += this.unit) {
                 const block = this.field.get(StaticField2d.hashCoordinate(Math.floor(_x / this.unit), Math.floor(_y / this.unit)));
                 if(block) {
                     for (const d of block.datas) {

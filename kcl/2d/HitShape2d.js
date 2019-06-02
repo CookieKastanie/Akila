@@ -1,4 +1,3 @@
-import { Vector2 } from '../../utils/Vector2';
 import { Face2d } from './Face2d';
 
 export class HitShape2d {
@@ -6,6 +5,11 @@ export class HitShape2d {
         this.id = HitShape2d.MAX_ID++;
         this.orientation = orientation;
         this.faces = new Array();
+        this.vertices = new Array();
+
+        for(let i = 0; i < vertices.length; i += 2) {
+            this.vertices.push(new Float32Array([vertices[i], vertices[i + 1]]));
+        }
 
         for (let i = 0; i < indices.length; i += 2) {
             const ip1 = indices[i] * 2;
