@@ -19,7 +19,10 @@ class FieldBlock {
 
     addData(data) {
         if(!this.datas.find(d => {
-            return data.shapeId == d.shapeId && data.faceId == d.faceId && data.worldPosX == d.worldPosX && data.worldPosY == d.worldPosY;
+            return data.shapeId == d.shapeId &&
+            data.faceId == d.faceId &&
+            data.worldPosX == d.worldPosX && 
+            data.worldPosY == d.worldPosY;
         })) {
             this.datas.push(data);
         }
@@ -85,12 +88,12 @@ export class StaticField2d {
 
         const dy = y1 - y0;
         const dx = x1 - x0;
-        const mInv = dx / dy;
+        const m = dx / dy;
 
         dec = dec ? this.unit : 0;
 
         for(let y = Math.floor(y0 / this.unit) * this.unit + this.unit; y <= y1; y += this.unit) {
-            const x =  mInv * (y - y0) + x0;
+            const x =  m * (y - y0) + x0;
             this.addToField(x, y - dec, data);
         }
     }
