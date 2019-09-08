@@ -57,7 +57,7 @@ export class VAO {
   }
 
   drawVAO(){
-    this.useVBOs();
+    this.use();
     Display.ctx.drawArrays(this.mode, 0, this.dataLength);
   }
 
@@ -78,6 +78,7 @@ export class IndexedVAO extends VAO {
 
   setIBO(ibo){
     this.ibo = ibo;
+    this.refreshDataLength();
     return this;
   }
 
@@ -86,7 +87,7 @@ export class IndexedVAO extends VAO {
   }
 
   refreshDataLength(){
-    this.nbIndex = this.ibo.getDataLength();
+    if(this.ibo) this.nbIndex = this.ibo.getDataLength();
   }
 
   useVBOs(){

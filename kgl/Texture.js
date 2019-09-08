@@ -40,13 +40,27 @@ export class Texture {
       );
     }
 
+    this.setParameters();
+  }
 
-    if (this.isPowerOf2(img.width) && this.isPowerOf2(img.height)) {
+  setParameters(params = {magFilter: Texture.LINEAR, minFilter: Texture.LINEAR, wrapS: Texture.REPEAT, wrapT: Texture.REPEAT}) {
+    params = {
+      magFilter: params.magFilter || Texture.LINEAR,
+      minFilter: params.minFilter || Texture.LINEAR,
+      wrapS: params.wrapS || Texture.REPEAT,
+      wrapT: params.wrapT || Texture.REPEAT
+    };
+
+    if (this.isPowerOf2(this.width) && this.isPowerOf2(this.height)) {
       Display.ctx.generateMipmap(Display.ctx.TEXTURE_2D);
       //Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx.NEAREST_MIPMAP_LINEAR);
 
-      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx.LINEAR);
-      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx.LINEAR_MIPMAP_LINEAR);
+      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
+      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
+
+
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx[params.wrapS]);
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx[params.wrapT]);
 
       /*
 
@@ -71,8 +85,11 @@ export class Texture {
     } else {
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx.CLAMP_TO_EDGE);
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx.CLAMP_TO_EDGE);
-      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx.LINEAR);
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
     }
+
+    return this;
   }
 
   setTextureData(data){
@@ -114,3 +131,13 @@ export class Texture {
 
 Texture.idMax = 0;
 Texture.currentIds = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+
+Texture.LINEAR = "LINEAR";
+Texture.NEAREST = "NEAREST";
+Texture.LINEAR_MIPMAP_LINEAR = "LINEAR_MIPMAP_LINEAR";
+Texture.LINEAR_MIPMAP_NEAREST = "LINEAR_MIPMAP_NEAREST";
+Texture.NEAREST_MIPMAP_NEAREST = "NEAREST_MIPMAP_NEAREST";
+Texture.NEAREST_MIPMAP_LINEAR = "NEAREST_MIPMAP_LINEAR";
+Texture.REPEAT = "REPEAT";
+Texture.CLAMP_TO_EDGE = "CLAMP_TO_EDGE";
+Texture.MIRRORED_REPEAT = "MIRRORED_REPEAT";

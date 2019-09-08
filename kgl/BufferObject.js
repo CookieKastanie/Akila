@@ -45,7 +45,8 @@ export class VBO extends BufferObject {
   }
 
   getDataLength(){
-    return this.dataLength / (this.nbOfElement / Float32Array.BYTES_PER_ELEMENT)
+    //return this.dataLength / (this.nbOfElement / Float32Array.BYTES_PER_ELEMENT)
+    return this.dataLength / this.nbOfElement;
   }
 
   use(){
