@@ -1,4 +1,5 @@
 import { Display } from './Display';
+import { Texture } from './Texture';
 
 export class FrameBuffer {
   constructor(width = 256, height = 256, options = {texColor: true, depthTest: true}) {
