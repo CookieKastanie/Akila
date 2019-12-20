@@ -69,6 +69,8 @@ export class Shader {
   }
 
   initUniformLocation(nom){
+    nom = nom.replace(/\[0\]/,'');
+    
     const pointer = Display.ctx.getUniformLocation(this.program, nom);
     if(pointer) this.uniformList[nom] = pointer;
     else console.error("Uniform '"+ nom +"' n'existe pas dans "+ this.name);
@@ -129,6 +131,14 @@ export class Shader {
 
   sendInt(nom, value){
     Display.ctx.uniform1i(this.getUniformLocation(nom), value);
+  }
+
+  sendIntVec(nom, value){
+    Display.ctx.uniform1iv(this.getUniformLocation(nom), value);
+  }
+
+  sendVec1(nom, value){
+    Display.ctx.uniform1fv(this.getUniformLocation(nom), value);
   }
 
   sendVec2(nom, value){

@@ -39,7 +39,11 @@ export class Time {
             requestAnimationFrame(cb);
         }
 
-        cb();
+        requestAnimationFrame((iNow) => {
+            Time.lastTime = iNow / 1e3;
+
+            requestAnimationFrame(cb);
+        });
     }
 }
 
