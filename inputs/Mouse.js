@@ -1,12 +1,13 @@
+import { Time } from '../time/Time';
+
 export class Mouse {
     constructor() {
         if(Mouse.instance != null) return;
         Mouse.instance = this;
+        Time.mouse = this.update;
 
         this.pressStates = new Array();
         this.toggleStates = new Array();
-
-
 
         this.clear();
 
@@ -20,12 +21,16 @@ export class Mouse {
             this.pressStates[event.button] = false;
         });
 
-        window.addEventListener('contextmenu', (event) => {
+        window.addEventListener('contextmenu', event => {
             event.preventDefault();
             return false;
         });
 
-        window.addEventListener('mousewheel', (event) => {
+        window.addEventListener('mousemove', event => {
+            //console.log(event)
+        });
+
+        window.addEventListener('mousewheel', event => {
             Mouse.instance.mouseScrollVelX = event.deltaX > 0 ? 1 : -1;
             Mouse.instance.mouseScrollVelY = event.deltaY > 0 ? 1 : -1;
 
@@ -38,6 +43,11 @@ export class Mouse {
             Mouse.instance.pressStates[i] = false;
             Mouse.instance.toggleStates[i] = false;
         }
+    }
+
+    update() {
+        Mouse.instance.mouseScrollVelX = 0;
+        Mouse.instance.mouseScrollVelY = 0;
     }
 
     isPressed(button) {
@@ -56,15 +66,12 @@ export class Mouse {
         
     }
 
-    getScrollVelX() {
-        const val = Mouse.instance.mouseScrollVelX;
-        Mouse.instance.mouseScrollVelX = 0;
-        return val;
+    getScrollVelX() {      
+        return Mouse.instance.mouseScrollVelX;
     }
 
-    getScrollVelY() {const val = Mouse.instance.mouseScrollVelY;
-        Mouse.instance.mouseScrollVelY = 0;
-        return val;
+    getScrollVelY() {
+        return Mouse.instance.mouseScrollVelY;
     }
 }
 

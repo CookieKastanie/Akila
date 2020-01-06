@@ -8,13 +8,26 @@ export class Keyboard {
 
         this.clear();
 
+        window.onkeydown = event => {
+            if (!event.ctrlKey) return;
+            switch (event.keyCode) {
+                case 83: //Block Ctrl+S
+                case 68: //Block Ctrl+D
+                    event.preventDefault();
+                    event.stopPropagation();
+                    break;
+            }
+        };
+
         window.addEventListener('keydown', event => {
             this.pressStates[event.keyCode] = true;
             this.toggleStates[event.keyCode] = !this.toggleStates[event.keyCode];
+            return false;
         });
 
         window.addEventListener('keyup', event => {
             this.pressStates[event.keyCode] = false;
+            return false;
         });
     }
 

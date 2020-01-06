@@ -1,8 +1,14 @@
 export class Time {
     constructor() {
+        if(Time.instance) return;
+        Time.instance = this;
+
         Time.init = () => {};
         Time.tick = () => {};
         Time.draw = () => {};
+
+        Time.mouse = () => {};
+        Time.gamepad = () => {};
 
         Time.run = false;
     }
@@ -33,8 +39,12 @@ export class Time {
             Time.fps = Math.floor(1 / Time.delta * 100) / 100;
             Time.lastTime = Time.now;
 
+            Time.gamepad();
+
             Time.tick();
             Time.draw();
+
+            Time.mouse();
 
             requestAnimationFrame(cb);
         }

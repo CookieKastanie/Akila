@@ -1,4 +1,6 @@
 import { Matrix4 } from './Matrix4';
+import { Keyboard } from '../inputs/Keyboard';
+import { Gamepad } from '../inputs/Gamepad';
 
 export class Camera {
   constructor(width, height) {
@@ -62,7 +64,9 @@ export class FirstPersonCamera extends Camera {
       }
     }, false);
 
-    document.addEventListener("keydown", e => {
+    this.keyboard = new Keyboard();
+    this.gamepad = new Gamepad();
+    /*document.addEventListener("keydown", e => {
       if (!!document.pointerLockElement){
         if(e.ctrlKey) e.preventDefault();
         switch (e.keyCode) {
@@ -87,7 +91,7 @@ export class FirstPersonCamera extends Camera {
           case 17: this.dhaut = 0; break;
         }
       }
-    });
+    });*/
   }
 
   setSpeed(sp){
@@ -101,6 +105,24 @@ export class FirstPersonCamera extends Camera {
   }
 
   getMatrix(){
+
+    if(this.keyboard.isPressed(Keyboard.KEY_Z)) this.dfront = 1;
+    if(this.keyboard.isPressed(Keyboard.KEY_S)) this.dfront = -1;
+    if(this.keyboard.isPressed(Keyboard.KEY_Q)) this.dlat = 1;
+    if(this.keyboard.isPressed(Keyboard.KEY_D)) this.dlat = -1;
+    if(this.keyboard.isPressed(Keyboard.SPACE)) this.dhaut = -1;
+    if(this.keyboard.isPressed(Keyboard.CTRL)) this.dhaut = 1;
+
+    if(!this.movX) this.movX = -this.gamepad.getStickBX(Gamepad.PLAYER1) * 0.05;
+    if(!this.movY) this.movY = -this.gamepad.getStickBY(Gamepad.PLAYER1) * 0.05;
+    if(!this.dfront) this.dfront = -this.gamepad.getStickAY(Gamepad.PLAYER1);
+    if(!this.dlat) this.dlat = -this.gamepad.getStickAX(Gamepad.PLAYER1);
+    if(!this.dhaut) this.dhaut = this.gamepad.getButton(Gamepad.PLAYER1, Gamepad.LEFT_TRIGGER);
+    if(!this.dhaut) this.dhaut = -this.gamepad.getButton(Gamepad.PLAYER1, Gamepad.RIGHT_TRIGGER);
+
+    //console.log(this.dfront, this.dlat);
+
+
     if(this.dfront != 0) this.front += this.acc * this.dfront;
     else if(this.front > 0) this.front -= this.acc;
     else if(this.front < 0) this.front += this.acc;
@@ -154,6 +176,12 @@ export class FirstPersonCamera extends Camera {
 
     this.movX = 0;
     this.movY = 0;
+
+
+    this.dfront = 0;
+    this.dlat = 0;
+    this.dhaut = 0;
+
     return super.getMatrix();
   }
 }

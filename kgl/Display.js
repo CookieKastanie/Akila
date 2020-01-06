@@ -1,5 +1,5 @@
 export class Display {
-  constructor(width = 300, height = 300) {
+  constructor(width = 300, height = 300, option = {webGLVersion: 1}) {
     if(Display.ctx) throw `Display est un singleton. Kgl ne gère qu'un seul canevas à la fois.`;
 
     this.canvas = document.createElement('canvas');
@@ -12,7 +12,7 @@ export class Display {
 
     this.conteneur.appendChild(this.canvas);
 
-    this.ctx = this.canvas.getContext("webgl");
+    this.ctx = this.canvas.getContext(option.webGLVersion == 2 ? "webgl2" : "webgl");
     if (!this.ctx) this.ctx = this.canvas.getContext("experimental-webgl");
     if (!this.ctx) throw "Impossible de d'initialiser le contexte WebGL";
 
@@ -86,6 +86,14 @@ export class Display {
     this.ctx.disable(this.ctx[val]);
   }
 
+  blendFunc(sfactor, dfactor) {
+    this.ctx.blendFunc(this.ctx[sfactor], this.ctx[dfactor]);
+  }
+
+  defaultBlendFunc() {
+    this.blendFunc(Display.ONE, Display.ZERO);
+  }
+
   getCanvas(){
     return this.canvas;
   }
@@ -102,3 +110,78 @@ Display.SAMPLE_ALPHA_TO_COVERAGE = "SAMPLE_ALPHA_TO_COVERAGE";
 Display.SAMPLE_COVERAGE = "SAMPLE_COVERAGE";
 Display.SCISSOR_TEST = "SCISSOR_TEST";
 Display.STENCIL_TEST = "STENCIL_TEST";
+
+/**
+ * Multiplies all colors by 0.
+ */
+Display.ZERO = "ZERO";
+
+/**
+ * Multiplies all colors by 1.
+ */
+Display.ONE	= "ONE";
+
+/**
+ * Multiplies all colors by the source colors.
+ */
+Display.SRC_COLOR	= "SRC_COLOR";
+
+/**
+ * Multiplies all colors by 1 minus each source color.
+ */
+Display.ONE_MINUS_SRC_COLOR = "ONE_MINUS_SRC_COLOR";
+
+/**
+ * Multiplies all colors by the destination color.
+ */
+Display.DST_COLOR	=	"DST_COLOR";
+
+/**
+ * Multiplies all colors by 1 minus each destination color.
+ */
+Display.ONE_MINUS_DST_COLOR	= "ONE_MINUS_DST_COLOR";
+
+/**
+ * Multiplies all colors by the source alpha value.
+ */
+Display.SRC_ALPHA	= "SRC_ALPHA";
+
+/**
+ * Multiplies all colors by 1 minus the source alpha value.
+ */
+Display.ONE_MINUS_SRC_ALPHA	= "ONE_MINUS_SRC_ALPHA";
+
+/**
+ * Multiplies all colors by the destination alpha value.
+ */
+Display.DST_ALPHA	= "DST_ALPHA";
+
+/**
+ * Multiplies all colors by 1 minus the destination alpha value.
+ */
+Display.ONE_MINUS_DST_ALPHA	= "ONE_MINUS_DST_ALPHA";
+
+/**
+ * Multiplies all colors by a constant color.
+ */
+Display.CONSTANT_COLOR = "CONSTANT_COLOR";
+
+/**
+ * Multiplies all colors by 1 minus a constant color.
+ */
+Display.ONE_MINUS_CONSTANT_COLOR = "ONE_MINUS_CONSTANT_COLOR";
+
+/**
+ * Multiplies all colors by a constant alpha value.
+ */
+Display.CONSTANT_ALPHA = "CONSTANT_ALPHA";
+
+/**
+ * Multiplies all colors by 1 minus a constant alpha value.
+ */
+Display.ONE_MINUS_CONSTANT_ALPHA = "ONE_MINUS_CONSTANT_ALPHA";
+
+/**
+ * Multiplies the RGB colors by the smaller of either the source alpha value or the value of 1 minus the destination alpha value. The alpha value is multiplied by 1.
+ */
+Display.SRC_ALPHA_SATURATE = "SRC_ALPHA_SATURATE";

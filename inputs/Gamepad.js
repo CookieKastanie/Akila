@@ -1,14 +1,24 @@
+import { Time } from '../time/Time';
+
 export class Gamepad {
     constructor() {
         if(Gamepad.instance != null) return;
         Gamepad.instance = this;
+        Time.gamepad = this.update;
 
         this.states = new Array();
+        this.connect = [false, false, false, false];
+        this.setDeadZone(0.1);
 
         for(let i = 0; i < 4; ++i) this.clear(i);
 
+        window.addEventListener("gamepadconnected", event => {
+            this.connect[event.gamepad.index] = true;
+        });
+
         window.addEventListener("gamepaddisconnected", event => {
             this.clear(event.gamepad.index);
+            this.connect[event.gamepad.index] = false;
         });
     }
 
@@ -28,8 +38,20 @@ export class Gamepad {
         for (let m of navigator.getGamepads()) if(m) {
             const state = Gamepad.instance.states[i++];
             state.buttons = m.buttons;
-            state.axes = m.axes;
+            //state.axes = m.axes;
+            state.axes[0] = m.axes[0] >= Gamepad.deadZone || m.axes[0] <= -Gamepad.deadZone ? m.axes[0] : 0;
+            state.axes[1] = m.axes[1] >= Gamepad.deadZone || m.axes[1] <= -Gamepad.deadZone ? m.axes[1] : 0;
+            state.axes[2] = m.axes[2] >= Gamepad.deadZone || m.axes[2] <= -Gamepad.deadZone ? m.axes[2] : 0;
+            state.axes[3] = m.axes[3] >= Gamepad.deadZone || m.axes[3] <= -Gamepad.deadZone ? m.axes[3] : 0;
         }
+    }
+
+    isConnect(player) {
+        return Gamepad.instance.connect[player];
+    }
+
+    setDeadZone(value) {
+        Gamepad.deadZone = value;
     }
 
     getButton(player, button) {
