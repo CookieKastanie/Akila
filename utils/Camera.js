@@ -52,7 +52,7 @@ export class FirstPersonCamera extends Camera {
     this.movX = 0;
     this.movY = 0;
 
-    this.canvas = document.getElementById("kgl-canvas");
+    this.canvas = document.getElementById("webgl-canvas");
     this.canvas.addEventListener("click", () => {
       if (!document.pointerLockElement) this.canvas.requestPointerLock();
     });

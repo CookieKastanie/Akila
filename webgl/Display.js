@@ -1,13 +1,13 @@
 export class Display {
   constructor(width = 300, height = 300, option = {webGLVersion: 1}) {
-    if(Display.ctx) throw `Display est un singleton. Kgl ne gère qu'un seul canevas à la fois.`;
+    if(Display.ctx) throw `Display est un singleton -> qu'un seul canevas à la fois.`;
 
     this.canvas = document.createElement('canvas');
 
-    this.canvas.id = "kgl-canvas";
+    this.canvas.id = "webgl-canvas";
 
-    this.conteneur = document.getElementById('kgl-screen');
-    if (!this.conteneur) throw `Impossible de créer le canevas, il faut ajouter une balise avec l'id "kgl-screen"`;
+    this.conteneur = document.getElementById('webgl-screen');
+    if (!this.conteneur) throw `Impossible de créer le canevas, il faut ajouter une balise avec l'id "webgl-screen"`;
 
     this.conteneur.appendChild(this.canvas);
 
