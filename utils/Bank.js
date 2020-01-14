@@ -91,7 +91,7 @@ export class Bank {
 
           await requete(nom)
           .then(async file => {
-            if(typeof this.treatment === "function") this.fichiers[nom] = await this.treatment(file);
+            if(typeof this.treatment === "function") this.fichiers[nom] = await this.treatment(file, nom);
             else this.fichiers[nom] = file;
             --nbTotalFichier;
           })

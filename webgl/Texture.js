@@ -1,114 +1,25 @@
 import { Display } from './Display';
 
-export class Texture {
-  constructor(_img, _height = null, _unit = 0) {
-    let img, img_data, unit;
-
-    let isBuffer = false;
-
-    if(_height != null && typeof _img == "number"){
-      img = {width: _img, height: _height};
-      isBuffer = true;
-      unit = _unit;
-    } else {
-      img = _img
-      img_data = _img;
-      unit = _height == null ? 0 : _height;
-    }
-
+class TextureBuffer {
+  constructor(width, height) {
     this.id = Texture.idMax++;
 
-    this.width = img.width;
-    this.height = img.height;
+    this.width = width;
+    this.height = height;
 
     this.texture = Display.ctx.createTexture();
-    this.setUnit(unit);
+    this.setUnit(0);
+
     this.use();
-
-    if(!isBuffer){
-      this.setTextureData(img_data);
-    } else {
-      Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
-        0,
-        Display.ctx.RGBA,
-        this.width,
-        this.height,
-        0,
-        Display.ctx.RGBA,
-        Display.ctx.UNSIGNED_BYTE,
-        null
-      );
-    }
-
     this.setParameters();
   }
 
-  setParameters(params = {magFilter: Texture.LINEAR, minFilter: Texture.LINEAR, wrapS: Texture.REPEAT, wrapT: Texture.REPEAT}) {
-    params = {
-      magFilter: params.magFilter || Texture.LINEAR,
-      minFilter: params.minFilter || Texture.LINEAR,
-      wrapS: params.wrapS || Texture.REPEAT,
-      wrapT: params.wrapT || Texture.REPEAT
-    };
-
-    if (this.isPowerOf2(this.width) && this.isPowerOf2(this.height)) {
-      Display.ctx.generateMipmap(Display.ctx.TEXTURE_2D);
-      //Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx.NEAREST_MIPMAP_LINEAR);
-
-      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
-      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
-
-
-      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx[params.wrapS]);
-      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx[params.wrapT]);
-
-      /*
-
-      witch (filt) {
-        case POINT:// point sampling of nearest neighbor
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        break;
-        case BILINEAR:// bilinear interpolation
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        break;
-        case TRILINEAR:// trilinear interpolation on pyramid
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        break;
-        }
-
-      */
-
-      //  https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texParameter
-    } else {
-      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx.CLAMP_TO_EDGE);
-      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx.CLAMP_TO_EDGE);
-      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
-      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
-    }
-
-    return this;
+  getWidth() {
+    return this.width;
   }
 
-  setTextureData(data){
-    this.use();
-    Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
-      0, // niveau du bitmap
-      Display.ctx.RGBA, //internalFormat
-      Display.ctx.RGBA, //srcFormat
-      Display.ctx.UNSIGNED_BYTE, //srcType
-      data
-    );
-  }
-
-  getLocation(){
-    return this.texture;
-  }
-
-  isPowerOf2(val){
-    return (val & (val - 1)) == 0;
+  getHeight() {
+    return this.height;
   }
 
   setUnit(unit){
@@ -126,6 +37,91 @@ export class Texture {
 
     Display.ctx.activeTexture(Display.ctx.TEXTURE0 + this.unit);
     Display.ctx.bindTexture(Display.ctx.TEXTURE_2D, this.texture);
+  }
+
+  getLocation(){
+    return this.texture;
+  }
+
+  isPowerOf2(val){
+    return (val & (val - 1)) == 0;
+  }
+
+  setParameters(params = {magFilter: Texture.LINEAR, minFilter: Texture.LINEAR, wrapS: Texture.REPEAT, wrapT: Texture.REPEAT}) {
+    params = {
+      magFilter: params.magFilter || Texture.LINEAR,
+      minFilter: params.minFilter || Texture.LINEAR,
+      wrapS: params.wrapS || Texture.REPEAT,
+      wrapT: params.wrapT || Texture.REPEAT
+    };
+
+    if (this.isPowerOf2(this.width) && this.isPowerOf2(this.height)) {
+      Display.ctx.generateMipmap(Display.ctx.TEXTURE_2D);
+
+      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
+      Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
+
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx[params.wrapS]);
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx[params.wrapT]);
+
+    } else {
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx.CLAMP_TO_EDGE);
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx.CLAMP_TO_EDGE);
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
+      Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
+    }
+
+    return this;
+  }
+}
+
+export class Texture extends TextureBuffer {
+  constructor(data, width = data.width, height = data.height) {
+    super(width, height);
+
+    if(data != null) {
+      this.setTextureData(data);
+    } else {
+      Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
+        0,
+        Display.ctx.RGBA,
+        this.width,
+        this.height,
+        0,
+        Display.ctx.RGBA,
+        Display.ctx.UNSIGNED_BYTE,
+        null
+      );
+    }
+  }
+
+  setTextureData(data){
+    this.use();
+    Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
+      0, // niveau du bitmap
+      Display.ctx.RGBA, //internalFormat
+      Display.ctx.RGBA, //srcFormat
+      Display.ctx.UNSIGNED_BYTE, //srcType
+      data
+    );
+  }
+}
+
+
+export class DepthTexture extends TextureBuffer {
+  constructor(width, height) {
+    super(width, height);
+    
+    Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
+      0,
+      Display.ctx.DEPTH_COMPONENT,
+      this.width,
+      this.height,
+      0,
+      Display.ctx.DEPTH_COMPONENT,
+      Display.ctx.UNSIGNED_SHORT,
+      null
+    );
   }
 }
 

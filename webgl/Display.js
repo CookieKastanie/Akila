@@ -5,7 +5,6 @@ export class Display {
     this.canvas = document.createElement('canvas');
 
     this.canvas.id = "kgl-canvas";
-    //this.canvas.style = "margin: 0; object-fit: contain;";
 
     this.conteneur = document.getElementById('kgl-screen');
     if (!this.conteneur) throw `Impossible de créer le canevas, il faut ajouter une balise avec l'id "kgl-screen"`;
@@ -16,6 +15,8 @@ export class Display {
     if (!this.ctx) this.ctx = this.canvas.getContext("experimental-webgl");
     if (!this.ctx) throw "Impossible de d'initialiser le contexte WebGL";
 
+    this.loadExtensions();
+
     this.use();
 
     this.setSize(width, height);
@@ -25,15 +26,19 @@ export class Display {
 
     this.ctx.enable(this.ctx.BLEND);
     this.ctx.enable(this.ctx.SAMPLE_ALPHA_TO_COVERAGE);
-    this.ctx.blendFunc(this.ctx.SRC_ALPHA, this.ctx.ONE_MINUS_SRC_ALPHA);
-    //this.ctx.blendFunc(this.ctx.ONE, this.ctx.ZERO);
-    //this.ctx.blendFuncSeparate(this.ctx.SRC_COLOR, this.ctx.ONE_MINUS_SRC_ALPHA, this.ctx.ONE, this.ctx.ONE);
+    this.defaultBlendFunc();
 
     this.ctx.enable(this.ctx.CULL_FACE);
   	this.ctx.frontFace(this.ctx.CCW);
   	this.ctx.cullFace(this.ctx.BACK);
 
     this.clear();
+  }
+
+  loadExtensions() {
+    this.exts = {
+      WEBGL_depth_texture: this.ctx.getExtension('WEBGL_depth_texture')
+    }
   }
 
   getDiv(){
@@ -73,8 +78,6 @@ export class Display {
   useDefaultFrameBuffer(){
     this.ctx.bindFramebuffer(this.ctx.FRAMEBUFFER, null);
     this.ctx.bindRenderbuffer(this.ctx.RENDERBUFFER, null);
-
-    //this.ctx.blendFunc(this.ctx.SRC_ALPHA, this.ctx.ONE_MINUS_SRC_ALPHA);
     this.ctx.viewport(0, 0, this.getWidth(), this.getHeight());
   }
 
@@ -91,7 +94,11 @@ export class Display {
   }
 
   defaultBlendFunc() {
-    this.blendFunc(Display.ONE, Display.ZERO);
+    this.ctx.blendFunc(this.ctx.SRC_ALPHA, this.ctx.ONE_MINUS_SRC_ALPHA);
+  }
+
+  blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha) {
+    this.ctx.blendFuncSeparate(this.ctx[srcRGB], this.ctx[dstRGB], this.ctx[srcAlpha], this.ctx[dstAlpha]);
   }
 
   getCanvas(){
