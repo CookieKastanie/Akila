@@ -42,7 +42,7 @@ export class WebSocketUtils {
             }
         }
 
-        return d;
+        return Buffer.from(d);
     }
 
     static unmask(mask, len, payloadFirstByte, data, opcode){

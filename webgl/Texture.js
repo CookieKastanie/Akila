@@ -73,6 +73,10 @@ class TextureBuffer {
 
     return this;
   }
+
+  delete(){
+    Display.ctx.deleteTexture(this.texture);
+  }
 }
 
 export class Texture extends TextureBuffer {

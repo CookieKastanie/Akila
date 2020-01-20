@@ -39,6 +39,15 @@ export class FrameBuffer {
     Display.ctx.viewport(0, 0, this.width, this.height);
   }
 
+  delete(){
+    if(this.textures.color) this.textures.color.delete();
+    if(this.textures.depth) this.textures.depth.delete();
+
+    if(this.depthBufferPointer) Display.ctx.deleteRenderbuffer(this.depthBufferPointer);
+
+    Display.ctx.deleteFramebuffer(this.frameBufferPointer);
+  }
+
   getTexture(){
     return this.textures.color;
   }
