@@ -68,6 +68,7 @@ export class Timeline {
 
     setLoop(loop) {
         this.loop = loop;
+        return this;
     }
 
     update() {
@@ -80,7 +81,7 @@ export class Timeline {
             const lastTime = this.keys[this.currentIndex + 1].getTime();
 
             if(lastTime < this.currentTime) {
-                
+
                 if(this.loop) {
                     this.currentIndex = 0;
                     this.currentTime -= lastTime;
@@ -109,7 +110,7 @@ export class Timeline {
                     this.buffer[prop] = this.bezier2(data1[prop], dataControl1[prop], data2[prop], delta);
                 }
             }
-            
+
         } else {
             for(const prop of this.props) {
                 this.buffer[prop] = this.bezier1(data1[prop], data2[prop], delta);

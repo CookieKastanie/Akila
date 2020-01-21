@@ -22,6 +22,14 @@ export class Camera {
     //Matrix4.lookAt(this.camMatrix, this.eye, this.center, this.up);
     return Matrix4.multiply(this.finalMat, this.projMatrix, this.camMatrix);
   }
+
+  getCameraPositionMatrix() {
+    return this.camMatrix;
+  }
+
+  getProjectionMatrix() {
+    return this.projMatrix;
+  }
 }
 
 Camera.DEMIPI = Math.PI / 2.0;
