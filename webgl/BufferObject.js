@@ -9,6 +9,7 @@ export class BufferObject {
 
   setUsage(usage = BufferObject.STATIC_DRAW){
     this.usage = Display.ctx[usage];
+    return this;
   }
 
   delete(){

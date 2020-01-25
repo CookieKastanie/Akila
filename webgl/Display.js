@@ -67,6 +67,14 @@ export class Display {
     this.ctx.clear(this.ctx.COLOR_BUFFER_BIT | this.ctx.DEPTH_BUFFER_BIT);
   }
 
+  clearColor(){
+    this.ctx.clear(this.ctx.COLOR_BUFFER_BIT);
+  }
+
+  clearDepth(){
+    this.ctx.clear(this.ctx.DEPTH_BUFFER_BIT);
+  }
+
   getCtx(){
     return this.ctx;
   }
