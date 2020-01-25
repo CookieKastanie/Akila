@@ -1,9 +1,9 @@
 # Sommaire
-[Display](#Display)
-[Shader](#Shader)
-[Les buffers de données (VAO, IndexedVAO, VBO, IBO)](#(Les-buffers-de-données-(VAO,-IndexedVAO,-VBO,-IBO)))
-[Texture](#Texture)
-[FrameBuffer](#FrameBuffer)
+ - [Display](#Display)
+ - [Shader](#Shader)
+ - [Les buffers de données (VAO, IndexedVAO, VBO, IBO)](#(Les-buffers-de-données-(VAO,-IndexedVAO,-VBO,-IBO)))
+ - [Texture](#Texture)
+ - [FrameBuffer](#FrameBuffer)
 
 # Display
 ```javascript
