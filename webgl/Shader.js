@@ -26,6 +26,9 @@ export class Shader {
         this.initUniformLocation(uniform.name);
       }
     }
+
+    this.attributNumber = Display.ctx.getProgramParameter(this.program, Display.ctx.ACTIVE_ATTRIBUTES) - 1;
+    if(Shader.attributeMax < this.attributNumber) Shader.attributeMax = this.attributNumber;
   }
 
 
@@ -110,9 +113,6 @@ export class Shader {
         return;
       }
 
-      if(this.attributNumber < num) this.attributNumber = num;
-      if(Shader.attributeMax < num) Shader.attributeMax = num;
-
       this.attributList[nom] = num;
     }
 
@@ -166,4 +166,4 @@ export class Shader {
   }
 }
 
-Shader.attributeMax = 0;
+Shader.attributeMax = -1;
