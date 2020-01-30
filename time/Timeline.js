@@ -17,8 +17,8 @@ class KeyQuadraticBezierState {
         const data2 = key2.getData();
 
         const dataControl1 = key1.getController1();
-
-        for(let i = 0; i < indexDelimiter; ++i) buffer[i] = TimelineUtils.bezier2(data1[prop], dataControl1[prop], data2[prop], delta);
+              
+        for(let i = 0; i < indexDelimiter; ++i) buffer[i] = TimelineUtils.bezier2(data1[i], dataControl1[i], data2[i], delta);
         for(let i = indexDelimiter; i < data1.length; ++i) buffer[i] = data1[i];
     }
 }
@@ -31,7 +31,7 @@ class KeyCubicBezierState {
         const dataControl1 = key1.getController1();
         const dataControl2 = key1.getController2();
 
-        for(let i = 0; i < indexDelimiter; ++i) buffer[i] = TimelineUtils.bezier3(data1[prop], dataControl1[prop], dataControl2[prop], data2[prop], delta);
+        for(let i = 0; i < indexDelimiter; ++i) buffer[i] = TimelineUtils.bezier3(data1[i], dataControl1[i], dataControl2[i], data2[i], delta);
         for(let i = indexDelimiter; i < data1.length; ++i) buffer[i] = data1[i];
     }
 }

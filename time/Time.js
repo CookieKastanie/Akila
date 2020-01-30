@@ -3,14 +3,16 @@ export class Time {
         if(Time.instance) return;
         Time.instance = this;
 
-        Time.init = () => {};
-        Time.tick = () => {};
-        Time.draw = () => {};
+        this.onInit(() => {});
+        this.onTick(() => {});
+        this.onDraw(() => {});
 
         Time.mouse = () => {};
         Time.gamepad = () => {};
 
         Time.run = false;
+        Time.tickStart = 0;
+        Time.drawStart = 0;
     }
 
     onInit(callBack) {
@@ -18,11 +20,17 @@ export class Time {
     }
 
     onTick(callack) {
-        Time.tick = callack;
+        Time.tickCallback = () => {
+            callack();
+            Time.tick = Time.now - Time.tickStart;
+        }
     }
 
     onDraw(callack) {
-        Time.draw = callack;
+        Time.drawCallback = () => {
+            callack();
+            Time.draw = Time.now - Time.drawStart;
+        }
     }
 
     async start() {
@@ -41,8 +49,8 @@ export class Time {
 
             Time.gamepad();
 
-            Time.tick();
-            Time.draw();
+            Time.tickFunc();
+            Time.drawFunc();
 
             Time.mouse();
 
@@ -52,8 +60,39 @@ export class Time {
         requestAnimationFrame((iNow) => {
             Time.lastTime = iNow / 1e3;
 
+            Time.now = Time.lastTime;
+            this.play();
+
             requestAnimationFrame(cb);
         });
+    }
+
+    pause() {
+        this.pauseTick();
+        this.pauseDraw();
+    }
+
+    play() {
+        this.playTick();
+        this.playDraw();
+    }
+
+    pauseTick() {
+        Time.tickFunc = () => {};
+    }
+
+    playTick() {
+        Time.tickFunc = Time.tickCallback;
+        Time.tickStart = Time.now - Time.tick;
+    }
+
+    pauseDraw() {
+        Time.drawFunc = () => {};
+    }
+
+    playDraw() {
+        Time.drawFunc = Time.drawCallback;
+        Time.drawStart = Time.now - Time.draw;
     }
 }
 
@@ -61,3 +100,5 @@ Time.delta = 0;
 Time.lastTime = 0;
 Time.fps = 0;
 Time.now = 0;
+Time.tick = 0;
+Time.draw = 0;
