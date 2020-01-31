@@ -31,7 +31,7 @@ export class VBO extends BufferObject {
     }
   }
 
-  setData(){}
+  setData(data, offset = 0){}
 
   setNewData(data){
     Display.ctx.bindBuffer(Display.ctx.ARRAY_BUFFER, this.pointer);
@@ -42,7 +42,7 @@ export class VBO extends BufferObject {
 
   setSubData(data, offset = 0){
     Display.ctx.bindBuffer(Display.ctx.ARRAY_BUFFER, this.pointer);
-    Display.ctx.bufferSubData(Display.ctx.ARRAY_BUFFER, offset, data);
+    Display.ctx.bufferSubData(Display.ctx.ARRAY_BUFFER, offset * Float32Array.BYTES_PER_ELEMENT, data);
   }
 
   getDataLength(){
