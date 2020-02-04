@@ -13,6 +13,8 @@ export class Time {
         Time.run = false;
         Time.tickStart = 0;
         Time.drawStart = 0;
+
+        this.setDeltaLimite(1 / 15);
     }
 
     onInit(callBack) {
@@ -43,7 +45,7 @@ export class Time {
         const cb = (iNow) => {
             Time.now = iNow / 1e3;
             Time.delta = Time.now - Time.lastTime;
-            if(Time.delta > 1) Time.delta = 0;
+            Time.limitedDelta = Time.delta > Time.maxDelta ? Time.maxDelta : Time.delta;
             Time.fps = Math.floor(1 / Time.delta * 100) / 100;
             Time.lastTime = Time.now;
 
@@ -65,6 +67,10 @@ export class Time {
 
             requestAnimationFrame(cb);
         });
+    }
+
+    setDeltaLimite(limite) {
+        Time.maxDelta = limite;
     }
 
     pause() {
@@ -97,6 +103,7 @@ export class Time {
 }
 
 Time.delta = 0;
+Time.limitedDelta = 0;
 Time.lastTime = 0;
 Time.fps = 0;
 Time.now = 0;

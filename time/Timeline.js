@@ -125,7 +125,7 @@ class TimelineLoopState {
 export class Timeline {
     constructor(interpolateIndexDelimiter = -1) {
         this.keys = new Array();
-        this.buffer = new Object();
+        this.buffer = new Array();
         this.indexDelimiter = interpolateIndexDelimiter;
         this.setLoop(false);
         this.reset();
@@ -134,7 +134,14 @@ export class Timeline {
     addKey(key) {
         if(this.keys.length == 0) {
             const data = key.getData();
-            this.buffer = new Array(data.length);
+
+            if(data instanceof Float32Array) this.buffer = new Float32Array(data.length);
+            else if(data instanceof Float64Array) this.buffer = new Float64Array(data.length);
+            else if(data instanceof Int8Array) this.buffer = new Int8Array(data.length);
+            else if(data instanceof Int16Array) this.buffer = new Int16Array(data.length);
+            else if(data instanceof Int32Array) this.buffer = new Int32Array(data.length);
+            else this.buffer = new Array(data.length);
+
             if(this.indexDelimiter == -1) this.indexDelimiter = data.length;
             for(let i = 0; i < data.length; ++i) this.buffer[i] = data[i];
         }
