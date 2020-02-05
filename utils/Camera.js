@@ -1,5 +1,6 @@
 import { Matrix4 } from './Matrix4';
 import { Keyboard } from '../inputs/Keyboard';
+import { Mouse } from '../inputs/Mouse';
 import { Gamepad } from '../inputs/Gamepad';
 
 export class Camera {
@@ -65,14 +66,15 @@ export class FirstPersonCamera extends Camera {
       if (!document.pointerLockElement) this.canvas.requestPointerLock();
     });
 
-    this.canvas.addEventListener("mousemove", e => {
+    /*this.canvas.addEventListener("mousemove", e => {
       if (!!document.pointerLockElement){
         this.movX = -e.movementX * this.sensibilite;
         this.movY = -e.movementY * this.sensibilite;
       }
-    }, false);
+    }, false);*/
 
     this.keyboard = new Keyboard();
+    this.mouse = new Mouse();
     this.gamepad = new Gamepad();
     /*document.addEventListener("keydown", e => {
       if (!!document.pointerLockElement){
@@ -113,6 +115,13 @@ export class FirstPersonCamera extends Camera {
   }
 
   getMatrix(){
+    if (!!document.pointerLockElement){
+      this.movX = -this.mouse.velX() * this.sensibilite;
+      this.movY = -this.mouse.velY() * this.sensibilite;
+    } else {
+      this.movX = 0;
+      this.movY = 0;
+    }
 
     if(this.keyboard.isPressed(Keyboard.KEY_Z)) this.dfront = 1;
     if(this.keyboard.isPressed(Keyboard.KEY_S)) this.dfront = -1;
@@ -182,8 +191,8 @@ export class FirstPersonCamera extends Camera {
 
     this.camMatrix[14] += 1;
 
-    this.movX = 0;
-    this.movY = 0;
+    /*this.movX = 0;
+    this.movY = 0;*/
 
 
     this.dfront = 0;

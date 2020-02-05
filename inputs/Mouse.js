@@ -1,4 +1,5 @@
 import { Time } from '../time/Time';
+import { Display } from '../webgl/Display';
 
 export class Mouse {
     constructor() {
@@ -8,6 +9,19 @@ export class Mouse {
 
         this.pressStates = new Array();
         this.toggleStates = new Array();
+
+        this.x = 0;
+        this.y = 0;
+
+        this.movX = 0;
+        this.movY = 0;
+
+        if(Display.ctx) this.setDOMElementReference(Display.ctx.canvas);
+        else this.setDOMElementReference({
+            getBoundingClientRect: () => {
+                return {left: 0, top: 0};
+            } 
+        });
 
         this.clear();
 
@@ -27,7 +41,12 @@ export class Mouse {
         });
 
         window.addEventListener('mousemove', event => {
-            //console.log(event)
+            const rect = Mouse.domRef.getBoundingClientRect();
+            Mouse.instance.x = event.clientX - (rect.left + window.scrollX);
+            Mouse.instance.y = event.clientY - (rect.top + window.scrollY);
+
+            Mouse.instance.movX += event.movementX;
+            Mouse.instance.movY += event.movementY;
         });
 
         window.addEventListener('mousewheel', event => {
@@ -37,6 +56,8 @@ export class Mouse {
             return false;
         });
     }
+
+
 
     clear() {
         for(let i = 0; i < 4; ++i) {
@@ -48,6 +69,9 @@ export class Mouse {
     update() {
         Mouse.instance.mouseScrollVelX = 0;
         Mouse.instance.mouseScrollVelY = 0;
+
+        Mouse.instance.movX = 0;
+        Mouse.instance.movY = 0;
     }
 
     isPressed(button) {
@@ -58,20 +82,32 @@ export class Mouse {
         return Mouse.instance.toggleStates[button];
     }
 
-    getMouseVelX() {
-
+    posX() {
+        return Mouse.instance.x;
     }
 
-    getMouseVelX() {
-        
+    posY() {
+        return Mouse.instance.y;
     }
 
-    getScrollVelX() {      
+    velX() {
+        return Mouse.instance.movX;
+    }
+
+    velY() {
+        return Mouse.instance.movY;
+    }
+
+    scrollVelX() {      
         return Mouse.instance.mouseScrollVelX;
     }
 
-    getScrollVelY() {
+    scrollVelY() {
         return Mouse.instance.mouseScrollVelY;
+    }
+
+    setDOMElementReference(elem) {
+        Mouse.domRef = elem;
     }
 }
 
