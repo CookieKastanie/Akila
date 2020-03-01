@@ -2,203 +2,314 @@ import { Matrix4 } from './Matrix4';
 import { Keyboard } from '../inputs/Keyboard';
 import { Mouse } from '../inputs/Mouse';
 import { Gamepad } from '../inputs/Gamepad';
+import { Gesture } from '../inputs/Gesture';
 
 export class Camera {
-  constructor(width, height) {
-    this.camMatrix = Matrix4.identity(new Float32Array(16));
+    constructor(width, height) {
+        this.position = new Float32Array([0, 0, 0]);
+        this.up = new Float32Array([0, 1, 0]);
+        this.forward = new Float32Array([0, 0, 1]);
 
-    //this.projMatrix = Matrix4.perspective(Matrix4.identity(new Float32Array(16)), 1.0472, width / height, 0.001, 100.0);
-    this.projMatrix = Matrix4.perspective(Matrix4.identity(new Float32Array(16)), 1.0472, width / height, 0.001, 1.0);
+        this.camera = Matrix4.identity(new Float32Array(16));
+        this.projection = Matrix4.perspective(Matrix4.identity(new Float32Array(16)), 1.0472, width / height, 0.001, 1.0);
+    
+        this.buffer = Matrix4.identity(new Float32Array(16));
+    }
 
-    //this.projMatrix = Matrix4.ortho(Matrix4.identity(new Float32Array(16)), -5.0, 5.0, -5.0, 5.0, 0.001, 100);
+    getPosition() {
+        return this.position;
+    }
 
-    this.finalMat = Matrix4.identity(new Float32Array(16));
+    getUp() {
+        return this.up;
+    }
 
-    /*this.eye = [0, 0, 5];
-    this.center = [0, 0, 0];
-    this.up = [0, 1, 0];*/
-  }
+    getForward() {
+        return this.forward;
+    }
 
-  getMatrix(){
-    //Matrix4.lookAt(this.camMatrix, this.eye, this.center, this.up);
-    return Matrix4.multiply(this.finalMat, this.projMatrix, this.camMatrix);
-  }
+    update() {
+        Matrix4.lookAt(this.camera, this.position, this.forward, this.up);
+    }
 
-  getCameraPositionMatrix() {
-    return this.camMatrix;
-  }
+    getProjectionMatrix() {
+        return this.projection;
+    }
 
-  getProjectionMatrix() {
-    return this.projMatrix;
-  }
+    getCameraMatrix() {
+        return this.camera;
+    }
+
+    getVPMatrix() {
+        return Matrix4.multiply(this.buffer, this.projection, this.camera);
+    }
 }
 
 Camera.DEMIPI = Math.PI / 2.0;
 
+
 export class FirstPersonCamera extends Camera {
-  constructor(width, height) {
-    super(width, height);
+    constructor(width, height) {
+        super(width, height);
 
-    this.sensibilite = 0.004;
-    this.acc = 0.04;
-    this.maxSpeed = 0.4;
+        this.mouse = new Mouse();
+        this.keyboard = new Keyboard();
+        this.gamepad = new Gamepad();
 
+        this.angle = new Float32Array([0, Camera.DEMIPI, 0]);
 
-    this.x = 0; this.y = 0; this.z = 0;
-    this.aX = 0; this.aY = 0; this.aZ = 0;
+        this.speed = 0.4
+        this.mouseSensibility = 0.004;
+        this.gamepadSensibility = 0.06;
 
-    this.dfront = 0; this.dlat = 0; this.dhaut = 0;
-    this.front = 0; this.lat = 0; this.haut = 0;
-
-    this.temp = Matrix4.identity(new Float32Array(16));
-    this.temp2 = Matrix4.identity(new Float32Array(16));
-    this.temp3 = Matrix4.identity(new Float32Array(16));
-
-    this.xAxis = [1, 0, 0];
-    this.yAxis = [0, 1, 0];
-    this.zAxis = [0, 0, 1];
-
-    this.movX = 0;
-    this.movY = 0;
-
-    this.canvas = document.getElementById("webgl-canvas");
-    this.canvas.addEventListener("click", () => {
-      if (!document.pointerLockElement) this.canvas.requestPointerLock();
-    });
-
-    /*this.canvas.addEventListener("mousemove", e => {
-      if (!!document.pointerLockElement){
-        this.movX = -e.movementX * this.sensibilite;
-        this.movY = -e.movementY * this.sensibilite;
-      }
-    }, false);*/
-
-    this.keyboard = new Keyboard();
-    this.mouse = new Mouse();
-    this.gamepad = new Gamepad();
-    /*document.addEventListener("keydown", e => {
-      if (!!document.pointerLockElement){
-        if(e.ctrlKey) e.preventDefault();
-        switch (e.keyCode) {
-          case 90: this.dfront = 1; break;
-          case 81: this.dlat = 1; break;
-          case 83: this.dfront = -1; break;
-          case 68: this.dlat = -1; break;
-          case 32: this.dhaut = -1; break;
-          case 17: this.dhaut = 1; break;
-        }
-      }
-    });
-
-    document.addEventListener("keyup", e => {
-      if (!!document.pointerLockElement){
-        switch (e.keyCode) {
-          case 90: this.dfront = 0; break;
-          case 81: this.dlat = 0; break;
-          case 83: this.dfront = 0; break;
-          case 68: this.dlat = 0; break;
-          case 32: this.dhaut = 0; break;
-          case 17: this.dhaut = 0; break;
-        }
-      }
-    });*/
-  }
-
-  setSpeed(sp){
-    this.maxSpeed = sp;
-    return this;
-  }
-
-  setAcc(acc){
-    this.acc = acc;
-    return this;
-  }
-
-  getMatrix(){
-    if (!!document.pointerLockElement){
-      this.movX = -this.mouse.velX() * this.sensibilite;
-      this.movY = -this.mouse.velY() * this.sensibilite;
-    } else {
-      this.movX = 0;
-      this.movY = 0;
+        const canvas = document.getElementById('webgl-canvas');
+        canvas.addEventListener('click', () => {
+            if(!document.pointerLockElement) canvas.requestPointerLock();
+        });
     }
 
-    if(this.keyboard.isPressed(Keyboard.KEY_Z)) this.dfront = 1;
-    if(this.keyboard.isPressed(Keyboard.KEY_S)) this.dfront = -1;
-    if(this.keyboard.isPressed(Keyboard.KEY_Q)) this.dlat = 1;
-    if(this.keyboard.isPressed(Keyboard.KEY_D)) this.dlat = -1;
-    if(this.keyboard.isPressed(Keyboard.SPACE)) this.dhaut = -1;
-    if(this.keyboard.isPressed(Keyboard.CTRL)) this.dhaut = 1;
+    setPosition(position) {
+        this.position[0] = position[0];
+        this.position[1] = position[1];
+        this.position[2] = position[2];
 
-    if(!this.movX) this.movX = -this.gamepad.getStickBX(Gamepad.PLAYER1) * 0.05;
-    if(!this.movY) this.movY = -this.gamepad.getStickBY(Gamepad.PLAYER1) * 0.05;
-    if(!this.dfront) this.dfront = -this.gamepad.getStickAY(Gamepad.PLAYER1);
-    if(!this.dlat) this.dlat = -this.gamepad.getStickAX(Gamepad.PLAYER1);
-    if(!this.dhaut) this.dhaut = this.gamepad.getButton(Gamepad.PLAYER1, Gamepad.LEFT_TRIGGER);
-    if(!this.dhaut) this.dhaut = -this.gamepad.getButton(Gamepad.PLAYER1, Gamepad.RIGHT_TRIGGER);
+        return this;
+    }
 
-    //console.log(this.dfront, this.dlat);
+    setAngle(angle) {
+        this.angle[0] = angle[0];
+        this.angle[1] = angle[1];
+        this.angle[2] = angle[2];
 
+        return this;
+    }
 
-    if(this.dfront != 0) this.front += this.acc * this.dfront;
-    else if(this.front > 0) this.front -= this.acc;
-    else if(this.front < 0) this.front += this.acc;
-    if(this.front < this.acc && this.front > -this.acc) this.front = 0;
-    if(this.front > this.maxSpeed) this.front = this.maxSpeed;
-    else if(this.front < -this.maxSpeed) this.front = -this.maxSpeed;
+    setMouseSensibility(val) {
+        this.mouseSensibility = val;
+        return this;
+    }
 
-    if(this.dlat != 0) this.lat += this.acc * this.dlat;
-    else if(this.lat > 0) this.lat -= this.acc;
-    else if(this.lat < 0) this.lat += this.acc;
-    if(this.lat < this.acc && this.lat > -this.acc) this.lat = 0;
-    if(this.lat > this.maxSpeed) this.lat = this.maxSpeed;
-    else if(this.lat < -this.maxSpeed) this.lat = -this.maxSpeed;
+    setGamepadSensibility(val) {
+        this.gamepadSensibility = val;
+        return this;
+    }
 
-    if(this.dhaut != 0) this.haut += this.acc * this.dhaut;
-    else if(this.haut > 0) this.haut -= this.acc;
-    else if(this.haut < 0) this.haut += this.acc;
-    if(this.haut < this.acc && this.haut > -this.acc) this.haut = 0;
-    if(this.haut > this.maxSpeed) this.haut = this.maxSpeed;
-    else if(this.haut < -this.maxSpeed) this.haut = -this.maxSpeed;
+    getAngle() {
+        return this.angle;
+    }
 
-    let angle = Math.atan2(this.movX, this.movY);
-    let dist = Math.sqrt(Math.pow(this.movX, 2) + Math.pow(this.movY, 2));
+    update() {
+        if (!!document.pointerLockElement){
+            this.movX = -this.mouse.velX() * this.mouseSensibility;
+            this.movY = this.mouse.velY() * this.mouseSensibility;
+        } else {
+            /*this.movX = 0;
+            this.movY = 0;*/
+            this.movX = -this.gamepad.getStickBX() * this.gamepadSensibility;
+            this.movY = this.gamepad.getStickBY() * this.gamepadSensibility;
+        }
+        
 
-    this.aX -= Math.cos(angle) * dist;
-    this.aY -= Math.sin(angle) * dist;
+        let angle = Math.atan2(this.movX, this.movY);
+        let dist = Math.sqrt(Math.pow(this.movX, 2) + Math.pow(this.movY, 2));
+    
+        this.angle[0] -= Math.cos(angle) * dist;
+        this.angle[1] -= Math.sin(angle) * dist;
 
-    this.x += Math.sin(-this.aY) * this.front + Math.cos(this.aY) * this.lat;
-    this.y += this.haut;
-    this.z += Math.cos(-this.aY) * this.front + Math.sin(this.aY) * this.lat;
-
-    if (this.aX > Camera.DEMIPI) this.aX = Camera.DEMIPI;
-    else if (this.aX < -Camera.DEMIPI) this.aX = -Camera.DEMIPI;
-
-    Matrix4.identity(this.temp);
-
-    Matrix4.multiply(this.temp,
-      Matrix4.fromRotation(Matrix4.identity(this.temp2), this.aX, this.xAxis),
-      Matrix4.fromRotation(Matrix4.identity(this.temp3), this.aY, this.yAxis)
-    );
-
-    Matrix4.identity(this.camMatrix);
-
-    this.camMatrix[12] = this.x;
-    this.camMatrix[13] = this.y;
-    this.camMatrix[14] = this.z - 1;
-
-    Matrix4.multiply(this.camMatrix, this.temp, this.camMatrix);
-
-    this.camMatrix[14] += 1;
-
-    /*this.movX = 0;
-    this.movY = 0;*/
+        if (this.angle[0] > Camera.DEMIPI) this.angle[0] = Camera.DEMIPI;
+        else if (this.angle[0] < -Camera.DEMIPI) this.angle[0] = -Camera.DEMIPI;
 
 
-    this.dfront = 0;
-    this.dlat = 0;
-    this.dhaut = 0;
+        const cax = Math.cos(this.angle[0]);
+        const cay = Math.cos(this.angle[1]);
+        const say = Math.sin(this.angle[1]);
 
-    return super.getMatrix();
-  }
+        this.forward[0] = cay * cax;
+        this.forward[1] = Math.sin(this.angle[0]);
+        this.forward[2] = say * cax;
+
+
+        const angle2 = this.angle[0] + Camera.DEMIPI;
+        const cangle2 = Math.cos(angle2);
+        this.up[0] = cay * cangle2;
+        this.up[1] = Math.sin(angle2);
+        this.up[2] = say * cangle2;
+
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        if(this.keyboard.isPressed(Keyboard.KEY_Z)) {
+            this.position[0] += this.forward[0] * this.speed;
+            this.position[1] += this.forward[1] * this.speed;
+            this.position[2] += this.forward[2] * this.speed;
+        } else {
+            let upDir = 0;
+
+            if(this.gamepad.getStickAY() > 0) upDir = 1;
+            else if(this.gamepad.getStickAY() < 0) upDir = -1;
+
+            this.position[0] -= this.forward[0] * this.speed * this.gamepad.getStickAY();
+            this.position[1] -= this.forward[1] * this.speed * upDir;
+            this.position[2] -= this.forward[2] * this.speed * this.gamepad.getStickAY();
+        }
+
+        if(this.keyboard.isPressed(Keyboard.KEY_S)) {
+            this.position[0] -= this.forward[0] * this.speed;
+            this.position[1] -= this.forward[1] * this.speed;
+            this.position[2] -= this.forward[2] * this.speed;
+        }
+
+        if(this.keyboard.isPressed(Keyboard.KEY_Q)) {
+            this.position[2] -= this.forward[0] * this.speed;
+            //this.position[1] += this.forward[1] * this.speed;
+            this.position[0] += this.forward[2] * this.speed;
+        } else {
+            this.position[2] += this.forward[0] * this.speed * this.gamepad.getStickAX();
+            //this.position[1] += this.forward[1] * this.speed;
+            this.position[0] -= this.forward[2] * this.speed * this.gamepad.getStickAX();
+        }
+
+
+        if(this.keyboard.isPressed(Keyboard.KEY_D)) {
+            this.position[2] += this.forward[0] * this.speed;
+            //this.position[1] += this.forward[1] * this.speed;
+            this.position[0] -= this.forward[2] * this.speed;
+        }
+
+
+
+        if(this.keyboard.isPressed(Keyboard.SPACE)) this.position[1] += this.speed;
+        else this.position[1] += this.speed * this.gamepad.getButton(Gamepad.RIGHT_TRIGGER);
+        if(this.keyboard.isPressed(Keyboard.CTRL)) this.position[1] -= this.speed;
+        else this.position[1] -= this.speed * this.gamepad.getButton(Gamepad.LEFT_TRIGGER);
+        
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        const posBuffer = new Float32Array(3);
+        const fBuffer = new Float32Array(3);
+
+        posBuffer[0] = this.forward[0] + this.position[0];
+        posBuffer[1] = this.forward[1] + this.position[1];
+        posBuffer[2] = this.forward[2] + this.position[2];
+
+        fBuffer[0] = this.forward[0] + posBuffer[0];
+        fBuffer[1] = this.forward[1] + posBuffer[1];
+        fBuffer[2] = this.forward[2] + posBuffer[2];
+
+        Matrix4.lookAt(this.camera, posBuffer, fBuffer, this.up);
+    }
+}
+
+
+
+
+
+export class TrackBallCamera extends Camera {
+    constructor(width, height) {
+        super(width, height);
+
+
+
+        this.gesture = new Gesture();
+
+        this.gamepad = new Gamepad();
+
+
+        this.mouse = new Mouse();
+
+        this.angle = new Float32Array([0, Camera.DEMIPI, 0]);
+        this.center = new Float32Array([0, 0, 0]);
+
+        this.mouseSensibility = 0.004;
+        this.scrollSpeed = 1.2;
+        this.distance = 1;
+    }
+
+    setMouseSensibility(val) {
+        this.mouseSensibility = val;
+        return this;
+    }
+
+    setAngle(angle) {
+        this.angle[0] = angle[0];
+        this.angle[1] = angle[1];
+        this.angle[2] = angle[2];
+
+        return this;
+    }
+
+    getAngle() {
+        return this.angle;
+    }
+
+    setCenter(center) {
+        this.center[0] = center[0];
+        this.center[1] = center[1];
+        this.center[2] = center[2];
+
+        return this;
+    }
+
+    getCenter() {
+        return this.center;
+    }
+
+    setDistance(distance) {
+        this.distance = distance;
+
+        return this;
+    }
+
+    getDistance() {
+        return this.distance;
+    }
+
+    update() {
+        let movX = 0;
+        let movY = 0;
+
+        if(this.mouse.isPressed(Mouse.LEFT_BUTTON)) {
+            movX = -this.mouse.velX() * this.mouseSensibility;
+            movY = -this.mouse.velY() * this.mouseSensibility;
+        } else if(this.gamepad.isConnect(Gamepad.PLAYER1)){
+            movX = this.gamepad.getStickBX() * 0.08;
+            movY = this.gamepad.getStickBY() * 0.08;
+        } else {
+            movX = -this.gesture.swipX() * this.mouseSensibility;
+            movY = -this.gesture.swipY() * this.mouseSensibility;
+        }
+
+        this.distance += this.mouse.scrollVelY() * this.scrollSpeed;
+        this.distance += (this.gamepad.getButton(Gamepad.LEFT_TRIGGER) - this.gamepad.getButton(Gamepad.RIGHT_TRIGGER)) * this.scrollSpeed;
+        this.distance = Math.max(this.distance, 0.0001);
+        
+        let angle = Math.atan2(movX, movY);
+        let dist = Math.sqrt(Math.pow(movX, 2) + Math.pow(movY, 2));
+    
+        this.angle[0] -= Math.cos(angle) * dist;
+        this.angle[1] -= Math.sin(angle) * dist;
+
+
+        const cax = Math.cos(this.angle[0]);
+        const cay = Math.cos(this.angle[1]);
+        const say = Math.sin(this.angle[1]);
+
+        this.position[0] = (cay * cax              ) * this.distance + this.center[0];
+        this.position[1] = (Math.sin(this.angle[0])) * this.distance + this.center[1];
+        this.position[2] = (say * cax              ) * this.distance + this.center[2];
+
+
+        const angle2 = this.angle[0] + Camera.DEMIPI;
+        const cangle2 = Math.cos(angle2);
+        this.up[0] = cay * cangle2;
+        this.up[1] = Math.sin(angle2);
+        this.up[2] = say * cangle2;
+
+ 
+        Matrix4.lookAt(this.camera, this.position, this.center, this.up);
+    }
 }

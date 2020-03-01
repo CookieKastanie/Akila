@@ -44,7 +44,7 @@ export class Time {
 
         const cb = (iNow) => {
             Time.now = iNow / 1e3;
-            Time.delta = Time.now - Time.lastTime;
+            Time.delta = (Time.now - Time.lastTime) * Time.scale;
             Time.limitedDelta = Time.delta > Time.maxDelta ? Time.maxDelta : Time.delta;
             Time.fps = Math.floor(1 / Time.delta * 100) / 100;
             Time.lastTime = Time.now;
@@ -67,6 +67,10 @@ export class Time {
 
             requestAnimationFrame(cb);
         });
+    }
+
+    setScale(scale) {
+        Time.scale = scale;
     }
 
     setDeltaLimite(limite) {
@@ -105,6 +109,7 @@ export class Time {
 Time.delta = 0;
 Time.limitedDelta = 0;
 Time.lastTime = 0;
+Time.scale = 1;
 Time.fps = 0;
 Time.now = 0;
 Time.tick = 0;

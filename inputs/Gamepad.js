@@ -22,7 +22,7 @@ export class Gamepad {
         });
     }
 
-    clear(player) {
+    clear(player = Gamepad.PLAYER1) {
         const buttons = new Array();
 
         for(let i = 0; i < 17; ++i) buttons.push({value: 0});
@@ -46,7 +46,7 @@ export class Gamepad {
         }
     }
 
-    isConnect(player) {
+    isConnect(player = Gamepad.PLAYER1) {
         return Gamepad.instance.connect[player];
     }
 
@@ -54,23 +54,23 @@ export class Gamepad {
         Gamepad.deadZone = value;
     }
 
-    getButton(player, button) {
+    getButton(button, player = Gamepad.PLAYER1) {
         return Gamepad.instance.states[player].buttons[button].value;
     }
 
-    getStickAX(player) {
+    getStickAX(player = Gamepad.PLAYER1) {
         return Gamepad.instance.states[player].axes[0];
     }
 
-    getStickAY(player) {
+    getStickAY(player = Gamepad.PLAYER1) {
         return Gamepad.instance.states[player].axes[1];
     }
 
-    getStickBX(player) {
+    getStickBX(player = Gamepad.PLAYER1) {
         return Gamepad.instance.states[player].axes[2];
     }
 
-    getStickBY(player) {
+    getStickBY(player = Gamepad.PLAYER1) {
         return Gamepad.instance.states[player].axes[3];
     }
 }

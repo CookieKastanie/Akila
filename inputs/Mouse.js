@@ -13,8 +13,7 @@ export class Mouse {
         this.x = 0;
         this.y = 0;
 
-        this.movX = 0;
-        this.movY = 0;
+        this.update();
 
         if(Display.ctx) this.setDOMElementReference(Display.ctx.canvas);
         else this.setDOMElementReference({
@@ -49,7 +48,7 @@ export class Mouse {
             Mouse.instance.movY += event.movementY;
         });
 
-        window.addEventListener('mousewheel', event => {
+        window.addEventListener('wheel', event => {
             Mouse.instance.mouseScrollVelX = event.deltaX > 0 ? 1 : -1;
             Mouse.instance.mouseScrollVelY = event.deltaY > 0 ? 1 : -1;
 

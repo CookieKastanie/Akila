@@ -160,7 +160,7 @@ export class Parser {
     }
 
     const norm = (v) => {
-        return Math.sqrt(v.x**2 + v.y**2 + v.z**2);
+        return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     }
 
     const normalize = (v) => {
