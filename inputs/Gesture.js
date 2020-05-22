@@ -26,6 +26,8 @@ export class Gesture {
 
             Gesture.instance.lastX = Gesture.instance.x;
             Gesture.instance.lastY = Gesture.instance.y;
+
+            Gesture.isTouch = true;
         });
 
         window.addEventListener('touchmove', event => {
@@ -45,11 +47,14 @@ export class Gesture {
 
             Gesture.instance.lastX = Gesture.instance.x;
             Gesture.instance.lastY = Gesture.instance.y;
+
+            Gesture.isTouch = true;
         });
 
         window.addEventListener('touchend', event => {
             Gesture.instance.movX = 0;
             Gesture.instance.movY = 0;
+            Gesture.isTouch = false;
         });
     }
 
@@ -62,6 +67,12 @@ export class Gesture {
 
         Gesture.instance.movX = 0;
         Gesture.instance.movY = 0;
+
+        Gesture.isTouch = false;
+    }
+
+    isTouch() {
+        return Gesture.isTouch;
     }
 
     touchX() {

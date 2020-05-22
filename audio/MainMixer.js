@@ -29,6 +29,14 @@ export class MainMixer {
         else this.setPosition = MainMixer.prototype.setPosition_COMPATIBILITY_METHODE_2;
     }
 
+    askPermission() {
+        if(this.ctx.state != 'running') {
+            return permissionPopup();
+        } else {
+            return Promise.resolve(true);
+        }
+    }
+
     resume() {
         return MainMixer.ctx.resume();
     }

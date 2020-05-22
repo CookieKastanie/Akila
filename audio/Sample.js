@@ -32,10 +32,11 @@ export class Sample {
         }
     }
 
-    play(offSet = 0) {
+    play(offSet = 0, loop = false) {
         const source = MainMixer.ctx.createBufferSource();
         source.buffer = this.buffer;
-        console.log(source)
+        //console.log(source)
+        source.loop = loop;
         this.currentSource = source;
         source.connect(this.panner);
         source.start(MainMixer.ctx.currentTime + offSet);

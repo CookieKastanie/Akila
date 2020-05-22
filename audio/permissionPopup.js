@@ -7,15 +7,17 @@ const DEFAULT_FOOTER_MESSAGE = ``;
 const HTML = ``;
 
 
-const CSS = `#bg {
+const CSS = 
+`
+#bg {
     left: 0; top: 0;
     position: absolute;
     background-color: #2d3436cc;
     width: 100%;
     height: 100%;
-  }
+}
   
-  #popup {
+#popup {
     text-align: center;
     -ms-user-select: none;
     user-select: none;
@@ -38,43 +40,43 @@ const CSS = `#bg {
     width: 30em;
     height: 5em;
     padding: 2em;
-  }
+}
   
-  #popup p {
+#popup p {
     margin-top: 0.5em;
-  }
+}
   
-  .btn {
+.btn {
     font-size: 0.9em;
     color: #011010;
     font-family: "Courier New";
     border: none;
     padding: 0.5em;
     font-weight: bold;
-  }
+}
   
-  .btn:hover {
+.btn:hover {
     cursor: pointer;
-  }
+}
   
-  #acc {
+#acc {
     background-color: #2ecc71;
     width: 60%;
     margin-right: 0.5em;
-  }
+}
   
-  #acc:hover {
+#acc:hover {
     background-color: #3edc81;
-  }
+}
   
-  #ref {
+#ref {
     background-color: #e74c3c;
     width: 30%;
-  }
+}
   
-  #ref:hover {
+#ref:hover {
     background-color: #f75c4c;
-  }`;
+}`;
 
 
 
@@ -90,67 +92,73 @@ const CSS = `#bg {
 
 
 export const permissionPopup = (message, footerMessage) => {
-    if(message == undefined) message = DEFAULT_MESSAGE;
-    if(footerMessage == undefined) footerMessage = DEFAULT_FOOTER_MESSAGE;
+    return new Promise(accept => {
+        if(message == undefined) message = DEFAULT_MESSAGE;
+        if(footerMessage == undefined) footerMessage = DEFAULT_FOOTER_MESSAGE;
 
-    const head = document.getElementsByTagName('head')[0];
-    const body = document.getElementsByTagName('body')[0];
+        const head = document.getElementsByTagName('head')[0];
+        const body = document.getElementsByTagName('body')[0];
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
+        const style = document.createElement('style');
+        style.innerHTML = CSS;
 
-    const bg = document.createElement('div');
-    bg.id = 'bg';
+        const bg = document.createElement('div');
+        bg.id = 'bg';
 
-    const div = document.createElement('div');
-    div.id = 'popup';
+        const div = document.createElement('div');
+        div.id = 'popup';
 
-    const p = document.createElement('p');
-    p.innerHTML = message;
+        const p = document.createElement('p');
+        p.innerHTML = message;
 
-    const acceptButton = document.createElement('button');
-    acceptButton.className = 'btn';
-    acceptButton.id = 'acc';
-    acceptButton.innerHTML = 'Accepter';
+        const acceptButton = document.createElement('button');
+        acceptButton.className = 'btn';
+        acceptButton.id = 'acc';
+        acceptButton.innerHTML = 'Accepter';
 
-    
-
-
-    acceptButton.onclick = () => {
-        MainMixer.ctx.resume().then(() => {
-            console.log('Contexte audio restauré ✅');
-        }).catch(e => {
-            console.error(e);
-        });
-
-        body.removeChild(bg);
-        body.removeChild(div);
-        head.removeChild(style);
-    }
-
-    const declineButton = document.createElement('button');
-    declineButton.className = 'btn';
-    declineButton.id = 'ref';
-    declineButton.innerHTML = 'Refuser';
+        
 
 
+        acceptButton.onclick = () => {
+            MainMixer.ctx.resume().then(() => {
+                console.log('Contexte audio restauré ✅');
+            }).catch(e => {
+                console.error(e);
+            });
 
+            body.removeChild(bg);
+            body.removeChild(div);
+            head.removeChild(style);
 
+            accept(true);
+        }
 
-    declineButton.onclick = () => {
-        body.removeChild(bg);
-        body.removeChild(div);
-        head.removeChild(style);
-    }
+        const declineButton = document.createElement('button');
+        declineButton.className = 'btn';
+        declineButton.id = 'ref';
+        declineButton.innerHTML = 'Refuser';
 
 
 
 
-    div.appendChild(p);
-    div.appendChild(acceptButton);
-    div.appendChild(declineButton);
 
-    head.appendChild(style);
-    body.appendChild(bg);
-    body.appendChild(div);
+        declineButton.onclick = () => {
+            body.removeChild(bg);
+            body.removeChild(div);
+            head.removeChild(style);
+
+            accept(false);
+        }
+
+
+
+
+        div.appendChild(p);
+        div.appendChild(acceptButton);
+        div.appendChild(declineButton);
+
+        head.appendChild(style);
+        body.appendChild(bg);
+        body.appendChild(div);
+    });
 }

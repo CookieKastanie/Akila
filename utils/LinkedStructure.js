@@ -137,6 +137,7 @@ export class LinkedStructure {
     createList(name) {
         const list = new LinkedList();
         this.addList(name, list);
+        return list;
     }
 
     addList(name, list) {

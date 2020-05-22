@@ -29,6 +29,12 @@ export class Keyboard {
             this.pressStates[event.keyCode] = false;
             return false;
         });
+
+        window.addEventListener('blur', e => {
+            for(let i = 0; i < 256; ++i) {
+                Keyboard.instance.pressStates[i] = false;
+            }
+        });
     }
 
     clear() {
