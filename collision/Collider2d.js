@@ -1,13 +1,12 @@
-class Axes2d {
-    constructor(x1, y1, x2, y2) {
-        this.origin = new Float32Array([x1, y1]);
-        this.direction = new Float32Array([-(y2 - y1), (x2 - x1)]);
-        const len = Math.hypot(this.direction[0], this.direction[1]);
-        if(len > 0) {
-            this.direction[0] = this.direction[0] / len;
-            this.direction[1] = this.direction[1] / len;
-        }
+const createAxis = (x1, y1, x2, y2) => {
+    const axis = new Float32Array([-(y2 - y1), (x2 - x1)]);
+    const len = Math.hypot(axis[0], axis[1]);
+    if(len > 0) {
+        axis[0] = axis[0] / len;
+        axis[1] = axis[1] / len;
     }
+
+    return axis;
 }
 
 export class Collider2d {
@@ -23,7 +22,7 @@ export class Collider2d {
         const length = loop && linked ? vertices.length : vertices.length - 2;
 
         for(let i = 0; i < length; i += step) {
-            this.axes.push(new Axes2d(vertices[i], vertices[i + 1], vertices[(i + 2) % vertices.length], vertices[(i + 3) % vertices.length]));
+            this.axes.push(createAxis(vertices[i], vertices[i + 1], vertices[(i + 2) % vertices.length], vertices[(i + 3) % vertices.length]));
         }
     }
 }

@@ -44,23 +44,23 @@ export class SAT2d {
 
     static createResultBuffer() {
         return {
-            axe: new Float32Array([0, 0]),
-            min: 0
+            axis: new Float32Array([0, 0]),
+            length: 0
         };
     }
 
     /**
      * Retourne l'axe et la distance minimum de séparation par rapport à colliderA
      */
-    static getMin(colliderA, matA, colliderB, matB, buffer = {axe: new Float32Array(2)}) {
-        buffer.axe[0] = 0;
-        buffer.axe[1] = 0;
-        buffer.min = 0;
+    static getMin(colliderA, matA, colliderB, matB, buffer = {axis: new Float32Array(2)}) {
+        buffer.axis[0] = 0;
+        buffer.axis[1] = 0;
+        buffer.length = 0;
 
         let diff = Infinity;
         let isColliderA = true;
-        for(const axe of colliderA.axes) {
-            multMat3(SAT2d.bufferN, axe.direction, matA, 0);
+        for(const axis of colliderA.axes) {
+            multMat3(SAT2d.bufferN, axis, matA, 0);
             const max = projectionMax(colliderA.vertices, matA);
             const min = projectionMin(colliderB.vertices, matB);
 
@@ -74,8 +74,8 @@ export class SAT2d {
             }
         }
 
-        for(const axe of colliderB.axes) {
-            multMat3(SAT2d.bufferN, axe.direction, matB, 0);
+        for(const axis of colliderB.axes) {
+            multMat3(SAT2d.bufferN, axis, matB, 0);
             const min = projectionMin(colliderA.vertices, matA);
             const max = projectionMax(colliderB.vertices, matB);
 
@@ -90,11 +90,11 @@ export class SAT2d {
             }
         }
 
-        if(isColliderA) buffer.min = -diff;
-        else buffer.min = diff;
+        if(isColliderA) buffer.length = -diff;
+        else buffer.length = diff;
         
-        buffer.axe[0] = SAT2d.bufferB[0];
-        buffer.axe[1] = SAT2d.bufferB[1];
+        buffer.axis[0] = SAT2d.bufferB[0];
+        buffer.axis[1] = SAT2d.bufferB[1];
 
         return buffer;
     }
