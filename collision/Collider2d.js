@@ -14,8 +14,16 @@ export class Collider2d {
         this.vertices = new Array();
         this.axes = new Array();
 
+        this.radius = 0;
+
         for(let i = 0; i < vertices.length; i += 2) {
-            this.vertices.push(new Float32Array([vertices[i], vertices[i + 1]]));
+            const x = vertices[i];
+            const y = vertices[i + 1];
+
+            const r = Math.hypot(x, y);
+            if(r > this.radius) this.radius = r;
+
+            this.vertices.push(new Float32Array([x, y]));
         }
 
         const step = linked ? 2 : 4;
@@ -24,5 +32,17 @@ export class Collider2d {
         for(let i = 0; i < length; i += step) {
             this.axes.push(createAxis(vertices[i], vertices[i + 1], vertices[(i + 2) % vertices.length], vertices[(i + 3) % vertices.length]));
         }
+    }
+
+    getVertices() {
+        return this.vertices;
+    }
+
+    getAxes() {
+        return this.axes;
+    }
+
+    getRadius() {
+        return this.radius;
     }
 }

@@ -40,6 +40,19 @@ const projectionMax = (vertices, mat) => {
 
 ///////////////////////////////////////////////////////////////////////////
 
+
+const circleBroadTest = (colliderA, matA, colliderB, matB) => {
+    const dx = matA[6] - matB[6];
+    const dy = matA[7] - matB[7];
+    const distanceSQR = dx * dx + dy * dy;
+    const radiusDistance = colliderA.radius + colliderB.radius;
+    
+    return distanceSQR < (radiusDistance * radiusDistance);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
 export class SAT2d {
 
     static createResultBuffer() {
@@ -56,6 +69,8 @@ export class SAT2d {
         buffer.axis[0] = 0;
         buffer.axis[1] = 0;
         buffer.length = 0;
+
+        if(!circleBroadTest(colliderA, matA, colliderB, matB)) return buffer;
 
         let diff = Infinity;
         let isColliderA = true;
@@ -90,12 +105,16 @@ export class SAT2d {
             }
         }
 
-        if(isColliderA) buffer.length = -diff;
-        else buffer.length = diff;
+        if(isColliderA) {
+            buffer.axis[0] = -SAT2d.bufferB[0];
+            buffer.axis[1] = -SAT2d.bufferB[1];
+        } else {
+            buffer.axis[0] = SAT2d.bufferB[0];
+            buffer.axis[1] = SAT2d.bufferB[1];
+        }
         
-        buffer.axis[0] = SAT2d.bufferB[0];
-        buffer.axis[1] = SAT2d.bufferB[1];
-
+        buffer.length = diff;
+        
         return buffer;
     }
 }
