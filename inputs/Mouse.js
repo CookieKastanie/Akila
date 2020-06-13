@@ -49,8 +49,11 @@ export class Mouse {
         });
 
         window.addEventListener('wheel', event => {
-            Mouse.instance.mouseScrollVelX = event.deltaX > 0 ? 1 : -1;
-            Mouse.instance.mouseScrollVelY = event.deltaY > 0 ? 1 : -1;
+            if(event.deltaX > 0) Mouse.instance.mouseScrollVelX = 1;
+            else if(event.deltaX < 0) Mouse.instance.mouseScrollVelX = -1;
+
+            if(event.deltaY > 0) Mouse.instance.mouseScrollVelY = 1;
+            else if(event.deltaY < 0) Mouse.instance.mouseScrollVelY = -1;
 
             return false;
         });
