@@ -55,7 +55,7 @@ class TextureBuffer {
       wrapT: params.wrapT || Texture.REPEAT
     };
 
-    if (this.isPowerOf2(this.width) && this.isPowerOf2(this.height)) {
+    /*if (this.isPowerOf2(this.width) && this.isPowerOf2(this.height)) {
       Display.ctx.generateMipmap(Display.ctx.TEXTURE_2D);
 
       Display.ctx.texParameterf(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
@@ -64,12 +64,12 @@ class TextureBuffer {
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx[params.wrapS]);
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx[params.wrapT]);
 
-    } else {
+    } else {*/
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_S, Display.ctx.CLAMP_TO_EDGE);
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_WRAP_T, Display.ctx.CLAMP_TO_EDGE);
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
       Display.ctx.texParameteri(Display.ctx.TEXTURE_2D, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
-    }
+    //}
 
     return this;
   }

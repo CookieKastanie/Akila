@@ -1,5 +1,5 @@
 const createAxis = (x1, y1, x2, y2) => {
-    const axis = new Float32Array([-(y2 - y1), (x2 - x1)]);
+    const axis = new Float32Array([-(y2 - y1), (x2 - x1), 0]);
     const len = Math.hypot(axis[0], axis[1]);
     if(len > 0) {
         axis[0] = axis[0] / len;
@@ -23,7 +23,7 @@ export class Collider2d {
             const r = Math.hypot(x, y);
             if(r > this.radius) this.radius = r;
 
-            this.vertices.push(new Float32Array([x, y]));
+            this.vertices.push(new Float32Array([x, y, 1]));
         }
 
         const step = linked ? 2 : 4;

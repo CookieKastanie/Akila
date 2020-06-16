@@ -1,14 +1,10 @@
+import { vec3 } from '../math';
+
 const dot = (v1, v2) => {
     return v1[0] * v2[0] + v1[1] * v2[1];
 }
 
-const multMat3 = (out, a, m, z = 1) => {
-    const x = a[0], y = a[1];
-    out[0] = x * m[0] + y * m[3] + z * m[6];
-    out[1] = x * m[1] + y * m[4] + z * m[7];
-
-    return out;
-}
+let multMat3;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -16,7 +12,7 @@ const projectionMin = (vertices, mat) => {
     let min = Infinity;
     
     for(const vertex of vertices) {
-        multMat3(SAT2d.bufferA, vertex, mat, 1);
+        multMat3(SAT2d.bufferA, vertex, mat);
         const val = dot(SAT2d.bufferA, SAT2d.bufferN);
 
         if(val < min) min = val;
@@ -29,7 +25,7 @@ const projectionMax = (vertices, mat) => {
     let max = -Infinity;
 
     for(const vertex of vertices) {
-        multMat3(SAT2d.bufferA, vertex, mat, 1);
+        multMat3(SAT2d.bufferA, vertex, mat);
         const val = dot(SAT2d.bufferA, SAT2d.bufferN);
 
         if(val > max) max = val;
@@ -55,6 +51,26 @@ const circleBroadTest = (colliderA, matA, colliderB, matB) => {
 
 export class SAT2d {
 
+    static setMatMode(mode) {
+        if(mode == SAT2d.MAT3) multMat3 = vec3.transformMat3;
+        else if(mode == SAT2d.MAT4XY) multMat3 = (out, a, m) => {
+            let x = a[0], z = a[1], w = a[2];
+            out[0] = m[0] * x + m[8] * z + m[12] * w;
+            out[1] = m[1] * x + m[9] * z + m[13] * w;
+            out[2] = m[2] * x + m[10] * z + m[14] * w;
+ 
+            return out;
+        }
+        else if(mode == SAT2d.MAT4XZ) multMat3 = (out, a, m) => {
+            let x = a[0], z = a[1], w = a[2];
+            out[0] = m[0] * x + m[8] * z + m[12] * w;
+            out[2] = m[1] * x + m[9] * z + m[13] * w;
+            out[1] = m[2] * x + m[10] * z + m[14] * w;
+ 
+            return out;
+        }
+    }
+
     static createResultBuffer() {
         return {
             axis: new Float32Array([0, 0]),
@@ -75,7 +91,7 @@ export class SAT2d {
         let diff = Infinity;
         let isColliderA = true;
         for(const axis of colliderA.axes) {
-            multMat3(SAT2d.bufferN, axis, matA, 0);
+            multMat3(SAT2d.bufferN, axis, matA);
             const max = projectionMax(colliderA.vertices, matA);
             const min = projectionMin(colliderB.vertices, matB);
 
@@ -90,7 +106,7 @@ export class SAT2d {
         }
 
         for(const axis of colliderB.axes) {
-            multMat3(SAT2d.bufferN, axis, matB, 0);
+            multMat3(SAT2d.bufferN, axis, matB);
             const min = projectionMin(colliderA.vertices, matA);
             const max = projectionMax(colliderB.vertices, matB);
 
@@ -119,6 +135,12 @@ export class SAT2d {
     }
 }
 
-SAT2d.bufferA = new Float32Array(2);
-SAT2d.bufferB = new Float32Array(2);
-SAT2d.bufferN = new Float32Array(2);
+SAT2d.setMatMode(SAT2d.MAT3);
+
+SAT2d.bufferA = new Float32Array(3);
+SAT2d.bufferB = new Float32Array(3);
+SAT2d.bufferN = new Float32Array(3);
+
+SAT2d.MAT3 = 0;
+SAT2d.MAT4XY = 1;
+SAT2d.MAT4XZ = 2;

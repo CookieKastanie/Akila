@@ -1,4 +1,4 @@
-import { Matrix4 } from './Matrix4';
+import { mat4 } from '../math';
 import { Keyboard } from '../inputs/Keyboard';
 import { Mouse } from '../inputs/Mouse';
 import { Gamepad } from '../inputs/Gamepad';
@@ -10,10 +10,10 @@ export class Camera {
         this.up = new Float32Array([0, 1, 0]);
         this.forward = new Float32Array([0, 0, 1]);
 
-        this.camera = Matrix4.identity(new Float32Array(16));
-        this.projection = Matrix4.perspective(Matrix4.identity(new Float32Array(16)), 1.0472, width / height, 0.001, 1.0);
+        this.camera = mat4.create();
+        this.projection = mat4.perspective(mat4.create(), 1.0472, width / height, 0.001, 100.0);
     
-        this.buffer = Matrix4.identity(new Float32Array(16));
+        this.buffer = mat4.create();
     }
 
     getPosition() {
@@ -29,7 +29,7 @@ export class Camera {
     }
 
     update() {
-        Matrix4.lookAt(this.camera, this.position, this.forward, this.up);
+        mat4.lookAt(this.camera, this.position, this.forward, this.up);
     }
 
     getProjectionMatrix() {
@@ -41,7 +41,7 @@ export class Camera {
     }
 
     getVPMatrix() {
-        return Matrix4.multiply(this.buffer, this.projection, this.camera);
+        return mat4.multiply(this.buffer, this.projection, this.camera);
     }
 }
 
@@ -188,19 +188,14 @@ export class FirstPersonCamera extends Camera {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-        const posBuffer = new Float32Array(3);
+        
         const fBuffer = new Float32Array(3);
 
-        posBuffer[0] = this.forward[0] + this.position[0];
-        posBuffer[1] = this.forward[1] + this.position[1];
-        posBuffer[2] = this.forward[2] + this.position[2];
+        fBuffer[0] = this.forward[0] + this.position[0];
+        fBuffer[1] = this.forward[1] + this.position[1];
+        fBuffer[2] = this.forward[2] + this.position[2];
 
-        fBuffer[0] = this.forward[0] + posBuffer[0];
-        fBuffer[1] = this.forward[1] + posBuffer[1];
-        fBuffer[2] = this.forward[2] + posBuffer[2];
-
-        Matrix4.lookAt(this.camera, posBuffer, fBuffer, this.up);
+        mat4.lookAt(this.camera, this.position, fBuffer, this.up);
     }
 }
 
@@ -310,6 +305,6 @@ export class TrackBallCamera extends Camera {
         this.up[2] = say * cangle2;
 
  
-        Matrix4.lookAt(this.camera, this.position, this.center, this.up);
+        mat4.lookAt(this.camera, this.position, this.center, this.up);
     }
 }
