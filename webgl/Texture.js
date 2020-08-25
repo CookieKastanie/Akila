@@ -129,6 +129,47 @@ export class DepthTexture extends TextureBuffer {
   }
 }
 
+export class CubeMapTexture extends TextureBuffer {
+  constructor(datas) {
+    super(datas[0].width, datas[0].height);
+
+    for(let i = 0; i < datas.length; ++i) {
+      Display.ctx.texImage2D(
+        Display.ctx.TEXTURE_CUBE_MAP_POSITIVE_X + i,
+        0, // niveau du bitmap
+        Display.ctx.RGBA, //internalFormat
+        Display.ctx.RGBA, //srcFormat
+        Display.ctx.UNSIGNED_BYTE, //srcType
+        datas[i]
+      );
+    }
+  }
+
+  setParameters(params = {magFilter: Texture.LINEAR, minFilter: Texture.LINEAR, wrapS: Texture.REPEAT, wrapT: Texture.REPEAT}) {
+    params = {
+      magFilter: params.magFilter || Texture.LINEAR,
+      minFilter: params.minFilter || Texture.LINEAR,
+      wrapS: params.wrapS || Texture.REPEAT,
+      wrapT: params.wrapT || Texture.REPEAT
+    };
+
+    Display.ctx.texParameteri(Display.ctx.TEXTURE_CUBE_MAP, Display.ctx.TEXTURE_WRAP_S, Display.ctx.CLAMP_TO_EDGE);
+    Display.ctx.texParameteri(Display.ctx.TEXTURE_CUBE_MAP, Display.ctx.TEXTURE_WRAP_T, Display.ctx.CLAMP_TO_EDGE);
+    Display.ctx.texParameteri(Display.ctx.TEXTURE_CUBE_MAP, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
+    Display.ctx.texParameteri(Display.ctx.TEXTURE_CUBE_MAP, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
+
+    return this;
+  }
+
+  use(){
+    if(Texture.currentIds[this.unit] == this.id) return;
+    Texture.currentIds[this.unit] = this.id;
+
+    Display.ctx.activeTexture(Display.ctx.TEXTURE0 + this.unit);
+    Display.ctx.bindTexture(Display.ctx.TEXTURE_CUBE_MAP, this.texture);
+  }
+}
+
 Texture.idMax = 0;
 Texture.currentIds = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
 

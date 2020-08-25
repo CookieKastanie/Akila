@@ -1,3 +1,4 @@
+import { Display } from '../webgl/Display';
 import { mat4 } from '../math';
 import { Keyboard } from '../inputs/Keyboard';
 import { Mouse } from '../inputs/Mouse';
@@ -5,13 +6,20 @@ import { Gamepad } from '../inputs/Gamepad';
 import { Gesture } from '../inputs/Gesture';
 
 export class Camera {
-    constructor(width, height) {
+    constructor(width, height, option = {fovy: 1.0472, aspect: width / height, near: 0.1, far: 100.0}) {
+        if(typeof width === 'object') option = width;
+
+        option.fovy = typeof option.fovy === 'number' ? option.fovy : 1.0472;
+        option.aspect = typeof option.aspect === 'number' ? option.aspect : width / height;
+        option.near = typeof option.near === 'number' ? option.near : 1.0472;
+        option.far = typeof option.far === 'number' ? option.far : 1.0472;
+
         this.position = new Float32Array([0, 0, 0]);
         this.up = new Float32Array([0, 1, 0]);
         this.forward = new Float32Array([0, 0, 1]);
 
         this.camera = mat4.create();
-        this.projection = mat4.perspective(mat4.create(), 1.0472, width / height, 0.001, 100.0);
+        this.projection = mat4.perspective(mat4.create(), option.fovy, option.aspect, option.near, option.far);
     
         this.buffer = mat4.create();
     }
@@ -49,8 +57,8 @@ Camera.DEMIPI = Math.PI / 2.0;
 
 
 export class FirstPersonCamera extends Camera {
-    constructor(width, height) {
-        super(width, height);
+    constructor(width, height, option) {
+        super(width, height, option);
 
         this.mouse = new Mouse();
         this.keyboard = new Keyboard();
@@ -62,7 +70,8 @@ export class FirstPersonCamera extends Camera {
         this.mouseSensibility = 0.004;
         this.gamepadSensibility = 0.06;
 
-        const canvas = document.getElementById('webgl-canvas');
+        //const canvas = document.getElementById('webgl-canvas');
+        const canvas = Display.ctx.canvas;
         canvas.addEventListener('click', () => {
             if(!document.pointerLockElement) canvas.requestPointerLock();
         });
@@ -204,8 +213,8 @@ export class FirstPersonCamera extends Camera {
 
 
 export class TrackBallCamera extends Camera {
-    constructor(width, height) {
-        super(width, height);
+    constructor(width, height, option) {
+        super(width, height, option);
 
 
 

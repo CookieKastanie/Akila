@@ -4,3 +4,4 @@ export * from './utils/Camera';
 export * from './utils/LinkedStructure';
 export * from './utils/Color';
 export * from './utils/GLSLParser';
+export * from './utils/CubeMapTextureBuilder';

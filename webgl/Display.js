@@ -1,15 +1,20 @@
 export class Display {
-  constructor(width = 300, height = 300, option = {webGLVersion: 1}) {
+  constructor(width = 300, height = 300, option = {webGLVersion: 1, canvas: null}) {
     if(Display.ctx) throw `Display est un singleton -> qu'un seul canevas à la fois.`;
 
-    this.canvas = document.createElement('canvas');
+    if(option.canvas) {
+      if(typeof option.canvas === 'string') this.canvas = document.querySelector(option.canvas);
+      else this.canvas = option.canvas;
+    } else {
+      this.canvas = document.createElement('canvas');
 
-    this.canvas.id = "webgl-canvas";
-
-    this.conteneur = document.getElementById('webgl-screen');
-    if (!this.conteneur) throw `Impossible de créer le canevas, il faut ajouter une balise avec l'id "webgl-screen"`;
-
-    this.conteneur.appendChild(this.canvas);
+      this.canvas.id = "webgl-canvas";
+  
+      this.conteneur = document.getElementById('webgl-screen');
+      if (!this.conteneur) throw `Impossible de créer le canevas, il faut ajouter une balise avec l'id "webgl-screen"`;
+  
+      this.conteneur.appendChild(this.canvas);
+    }
 
     this.ctx = this.canvas.getContext(option.webGLVersion == 2 ? "webgl2" : "webgl");
     if (!this.ctx) this.ctx = this.canvas.getContext("experimental-webgl");
@@ -101,6 +106,10 @@ export class Display {
     this.ctx.blendFunc(this.ctx[sfactor], this.ctx[dfactor]);
   }
 
+  depthFunc(func) {
+    this.ctx.depthFunc(this.ctx[func]);
+  }
+
   defaultBlendFunc() {
     this.ctx.blendFunc(this.ctx.SRC_ALPHA, this.ctx.ONE_MINUS_SRC_ALPHA);
   }
@@ -125,6 +134,9 @@ Display.SAMPLE_ALPHA_TO_COVERAGE = "SAMPLE_ALPHA_TO_COVERAGE";
 Display.SAMPLE_COVERAGE = "SAMPLE_COVERAGE";
 Display.SCISSOR_TEST = "SCISSOR_TEST";
 Display.STENCIL_TEST = "STENCIL_TEST";
+
+Display.LEQUAL = "LEQUAL";
+Display.LESS = "LESS";
 
 /**
  * Multiplies all colors by 0.
