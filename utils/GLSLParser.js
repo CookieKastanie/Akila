@@ -13,9 +13,9 @@ export class GLSLParser {
         let mode = -1;
 
         for(const line of lines) {
-            if(mode != 0 && line.trim().toUpperCase() == '#VERT_START') {
+            if(mode != 0 && line.trim().toUpperCase() == GLSLParser.VERT_START) {
                 mode = 0;
-            } else if(mode != 1 && line.trim().toUpperCase() == '#FRAG_START') {
+            } else if(mode != 1 && line.trim().toUpperCase() == GLSLParser.FRAG_START) {
                 mode = 1;
             } else {
                 progs[mode] += `${line}\n`;
@@ -28,3 +28,6 @@ export class GLSLParser {
         };
     }
 }
+
+GLSLParser.VERT_START = '#VERT_START';
+GLSLParser.FRAG_START = '#FRAG_START';
