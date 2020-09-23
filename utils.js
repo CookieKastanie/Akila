@@ -5,3 +5,5 @@ export * from './utils/LinkedStructure';
 export * from './utils/Color';
 export * from './utils/GLSLParser';
 export * from './utils/CubeMapTextureBuilder';
+export * from './utils/Infos';
+export * from './utils/Eagle';
