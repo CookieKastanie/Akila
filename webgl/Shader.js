@@ -7,8 +7,6 @@ export class Shader {
     this.attributList = new Object();
     this.attributNumber = 0;
 
-    this.uniformList = new Object();
-
     this.vertexShader = this.createShader(Display.ctx.VERTEX_SHADER, vs);
     if (!this.vertexShader) return;
     this.fragmantShader = this.createShader(Display.ctx.FRAGMENT_SHADER, fs);
@@ -16,6 +14,18 @@ export class Shader {
 
     this.createProgramme();
 
+    this.fetchUniforms();
+
+    this.attributNumber = Display.ctx.getProgramParameter(this.program, Display.ctx.ACTIVE_ATTRIBUTES) - 1;
+    if(Shader.attributeMax < this.attributNumber) Shader.attributeMax = this.attributNumber;
+  }
+
+
+///////////////// Private
+
+  fetchUniforms() {
+    this.uniformList = new Object();
+    
     let uniform = null;
     let index = 0;
     const nbUnif = Display.ctx.getProgramParameter(this.program, Display.ctx.ACTIVE_UNIFORMS);
@@ -26,14 +36,7 @@ export class Shader {
         this.initUniformLocation(uniform.name);
       }
     }
-
-    this.attributNumber = Display.ctx.getProgramParameter(this.program, Display.ctx.ACTIVE_ATTRIBUTES) - 1;
-    if(Shader.attributeMax < this.attributNumber) Shader.attributeMax = this.attributNumber;
   }
-
-
-///////////////// Private
-
 
   delShad(s){
     Display.ctx.detachShader(this.program, s);
