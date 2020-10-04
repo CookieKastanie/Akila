@@ -36,7 +36,7 @@ export class Shader {
 
 
   delShad(s){
-    Display.ctx.detacheShader(this.program, s);
+    Display.ctx.detachShader(this.program, s);
     Display.ctx.deleteShader(s);
   }
 
