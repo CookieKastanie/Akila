@@ -1,6 +1,8 @@
 export class Display {
-    constructor(width = 300, height = 300, option = {webGLVersion: 1, canvas: null}) {
+    constructor(width = 300, height = 300, option = {webGLVersion: 1, antialias: true, canvas: null}) {
         if(Display.ctx) throw `Display est un singleton -> qu'un seul canevas à la fois.`;
+
+        option.antialias = option.antialias != false ? true : false;
 
         if(option.canvas) {
             if(typeof option.canvas === 'string') this.canvas = document.querySelector(option.canvas);
@@ -16,9 +18,15 @@ export class Display {
             this.conteneur.appendChild(this.canvas);
         }
 
-        this.ctx = this.canvas.getContext(option.webGLVersion == 2 ? "webgl2" : "webgl");
-        if (!this.ctx) this.ctx = this.canvas.getContext("experimental-webgl");
-        if (!this.ctx) throw "Impossible de d'initialiser le contexte WebGL";
+        if(option.webGLVersion == 2) {
+            this.ctx = this.canvas.getContext("webgl2", {antialias: option.antialias});
+            if(!this.ctx) this.ctx = this.canvas.getContext("experimental-webgl2");
+            if(!this.ctx) throw "Impossible de d'initialiser le contexte WebGL2";
+        } else {
+            this.ctx = this.canvas.getContext("webgl", {antialias: option.antialias});
+            if(!this.ctx) this.ctx = this.canvas.getContext("experimental-webgl");
+            if(!this.ctx) throw "Impossible de d'initialiser le contexte WebGL";
+        }
 
         this.loadExtensions();
 

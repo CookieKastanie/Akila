@@ -2,13 +2,14 @@ import { Display } from './Display';
 import { Texture, DepthTexture } from './Texture';
 
 export class FrameBuffer {
-    constructor(width = 256, height = 256, options = {texColor: true, texColorUnit: 0, depthTest: true, texDepth: false, texDepthUnit: 0}) {
+    constructor(width = 256, height = 256, options = {texColor: true, texColorUnit: 0, depthTest: true, texDepth: false, texDepthUnit: 0, antialias: false}) {
         this.width = width;
         this.height = height;
         options = {
             texColor: options.texColor || false, texColorUnit: options.texColorUnit || 0,
             texDepth: options.texDepth || false, texDepthUnit: options.texDepthUnit || 0,
             depthTest: options.depthTest || false,
+            antialias: options.antialias || false,
         };
 
         this.textures = {
@@ -48,6 +49,20 @@ export class FrameBuffer {
         Display.ctx.deleteFramebuffer(this.frameBufferPointer);
     }
 
+    /* only with Webgl2 */
+    blitToScreen(filter = FrameBuffer.NEAREST) {
+        Display.ctx.bindFramebuffer(Display.ctx.DRAW_FRAMEBUFFER, null);
+        Display.ctx.bindFramebuffer(Display.ctx.READ_FRAMEBUFFER, this.frameBufferPointer);
+        Display.ctx.blitFramebuffer(0, 0, this.width, this.height, 0, 0, Display.ctx.canvas.width, Display.ctx.canvas.height, Display.ctx.COLOR_BUFFER_BIT, Display.ctx[filter]);
+    }
+
+    /* only with Webgl2 */
+    blitTo(frameBuffer, filter = FrameBuffer.NEAREST) {
+        Display.ctx.bindFramebuffer(Display.ctx.DRAW_FRAMEBUFFER, frameBuffer.frameBufferPointer);
+        Display.ctx.bindFramebuffer(Display.ctx.READ_FRAMEBUFFER, this.frameBufferPointer);
+        Display.ctx.blitFramebuffer(0, 0, this.width, this.height, 0, 0, frameBuffer.width, frameBuffer.height, Display.ctx.COLOR_BUFFER_BIT, Display.ctx[filter]);
+    }
+
     getTexture(){
         return this.textures.color;
     }
@@ -60,3 +75,6 @@ export class FrameBuffer {
         return this.textures.depth;
     }
 }
+
+FrameBuffer.LINEAR = 'LINEAR';
+FrameBuffer.NEAREST = 'NEAREST';
