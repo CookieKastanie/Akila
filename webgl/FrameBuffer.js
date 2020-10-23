@@ -74,6 +74,26 @@ export class FrameBuffer {
     getDepthTexture(){
         return this.textures.depth;
     }
+
+    setSize(width, height) {
+        this.width = width;
+        this.height = height;
+
+        if(this.textures.color) this.textures.color.setTextureData(null, width, height);
+        if(this.textures.depth) this.textures.depth.setTextureData(width, height);
+    }
+
+    clear(){
+        Display.ctx.clear(Display.ctx.COLOR_BUFFER_BIT | Display.ctx.DEPTH_BUFFER_BIT);
+    }
+
+    clearColor(){
+        Display.ctx.clear(Display.ctx.COLOR_BUFFER_BIT);
+    }
+
+    clearDepth(){
+        Display.ctx.clear(Display.ctx.DEPTH_BUFFER_BIT);
+    }
 }
 
 FrameBuffer.LINEAR = 'LINEAR';

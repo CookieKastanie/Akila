@@ -31,8 +31,8 @@ class TextureBuffer {
     }
 
     use(){
-        if(Texture.currentIds[this.unit] == this.id) return;
-        Texture.currentIds[this.unit] = this.id;
+        //if(Texture.currentIds[this.unit] == this.id) return;
+        //Texture.currentIds[this.unit] = this.id;
 
         Display.ctx.activeTexture(Display.ctx.TEXTURE0 + this.unit);
         Display.ctx.bindTexture(Display.ctx.TEXTURE_2D, this.texture);
@@ -81,7 +81,7 @@ class TextureBuffer {
 }
 
 export class Texture extends TextureBuffer {
-    constructor(data, width = data.width, height = data.height) {
+    constructor(data, width = data.naturalWidth, height = data.naturalHeight) {
         super(width, height);
 
         if(data != null) {
@@ -100,15 +100,32 @@ export class Texture extends TextureBuffer {
         }
     }
 
-    setTextureData(data){
+    setTextureData(data, width = data.naturalWidth, height = data.naturalHeight){
         this.use();
-        Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
-            0, // niveau du bitmap
-            Display.ctx.RGBA, //internalFormat
-            Display.ctx.RGBA, //srcFormat
-            Display.ctx.UNSIGNED_BYTE, //srcType
-            data
-        );
+
+        if(data != null) {
+            Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
+                0, // niveau du bitmap
+                Display.ctx.RGBA, //internalFormat
+                Display.ctx.RGBA, //srcFormat
+                Display.ctx.UNSIGNED_BYTE, //srcType
+                data
+            );
+        } else {
+            Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
+                0,
+                Display.ctx.RGBA,
+                width,
+                height,
+                0,
+                Display.ctx.RGBA,
+                Display.ctx.UNSIGNED_BYTE,
+                null
+            );
+        }
+
+        this.width = width;
+        this.height = height;
     }
 }
 
@@ -117,6 +134,15 @@ export class DepthTexture extends TextureBuffer {
     constructor(width, height) {
         super(width, height);
         
+        this.setTextureData(width, height);
+    }
+
+    setTextureData(width, height){
+        this.use();
+
+        this.width = width;
+        this.height = height;
+
         Display.ctx.texImage2D(Display.ctx.TEXTURE_2D,
             0,
             Display.ctx.DEPTH_COMPONENT,
@@ -163,8 +189,8 @@ export class CubeMapTexture extends TextureBuffer {
     }
 
     use(){
-        if(Texture.currentIds[this.unit] == this.id) return;
-        Texture.currentIds[this.unit] = this.id;
+        //if(Texture.currentIds[this.unit] == this.id) return;
+        //Texture.currentIds[this.unit] = this.id;
 
         Display.ctx.activeTexture(Display.ctx.TEXTURE0 + this.unit);
         Display.ctx.bindTexture(Display.ctx.TEXTURE_CUBE_MAP, this.texture);
@@ -172,7 +198,7 @@ export class CubeMapTexture extends TextureBuffer {
 }
 
 Texture.idMax = 0;
-Texture.currentIds = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+//Texture.currentIds = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
 
 Texture.LINEAR = "LINEAR";
 Texture.NEAREST = "NEAREST";
