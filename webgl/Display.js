@@ -38,7 +38,7 @@ export class Display {
         this.setClearColor(Math.random(), Math.random(), Math.random(), 1.0);
 
         this.ctx.enable(this.ctx.BLEND);
-        this.ctx.enable(this.ctx.SAMPLE_ALPHA_TO_COVERAGE);
+        //this.ctx.enable(this.ctx.SAMPLE_ALPHA_TO_COVERAGE);
         this.defaultBlendFunc();
 
         this.ctx.enable(this.ctx.CULL_FACE);
