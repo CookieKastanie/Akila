@@ -7,8 +7,8 @@ export class Mouse {
         Mouse.instance = this;
         Time.mouse = this.update;
 
-        this.pressStates = new Array();
-        this.toggleStates = new Array();
+        this.pressStates = new Array(3);
+        this.toggleStates = new Array(3);
 
         this.x = 0;
         this.y = 0;
@@ -24,31 +24,41 @@ export class Mouse {
 
         this.clear();
 
-        window.addEventListener('mousedown', event => {
+        let domElem = window;
+        if(Mouse.DOM_TARGET_CANVAS && Display.ctx) domElem = Display.ctx.canvas;
+
+        domElem.addEventListener('mousedown', event => {
             event.preventDefault();
             this.pressStates[event.button] = true;
             this.toggleStates[event.button] = !this.toggleStates[event.button];
         });
 
-        window.addEventListener('mouseup', event => {
+        domElem.addEventListener('mouseup', event => {
             this.pressStates[event.button] = false;
         });
 
-        window.addEventListener('contextmenu', event => {
+        domElem.addEventListener('mouseout', event => {
+            event.preventDefault();
+            for(let i = 0; i < this.pressStates.length; ++i) {
+                this.pressStates[i] = false;
+            }
+        });
+
+        domElem.addEventListener('contextmenu', event => {
             event.preventDefault();
             return false;
         });
 
-        window.addEventListener('mousemove', event => {
+        domElem.addEventListener('mousemove', event => {
             const rect = Mouse.domRef.getBoundingClientRect();
-            Mouse.instance.x = event.clientX - (rect.left + window.scrollX);
-            Mouse.instance.y = event.clientY - (rect.top + window.scrollY);
+            Mouse.instance.x = event.clientX - (rect.left + domElem.scrollX);
+            Mouse.instance.y = event.clientY - (rect.top + domElem.scrollY);
 
             Mouse.instance.movX += event.movementX;
             Mouse.instance.movY += event.movementY;
         });
 
-        window.addEventListener('wheel', event => {
+        domElem.addEventListener('wheel', event => {
             if(event.deltaX > 0) Mouse.instance.mouseScrollVelX = 1;
             else if(event.deltaX < 0) Mouse.instance.mouseScrollVelX = -1;
 
@@ -112,6 +122,8 @@ export class Mouse {
         Mouse.domRef = elem;
     }
 }
+
+Mouse.DOM_TARGET_CANVAS = false;
 
 Mouse.instance = null;
 

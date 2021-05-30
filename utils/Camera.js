@@ -14,6 +14,8 @@ export class Camera {
         option.near = typeof option.near === 'number' ? option.near : 1.0472;
         option.far = typeof option.far === 'number' ? option.far : 1.0472;
 
+        this.option = option;
+
         this.position = new Float32Array([0, 0, 0]);
         this.up = new Float32Array([0, 1, 0]);
         this.forward = new Float32Array([0, 0, 1]);
@@ -22,6 +24,11 @@ export class Camera {
         this.projection = mat4.perspective(mat4.create(), option.fovy, option.aspect, option.near, option.far);
     
         this.buffer = mat4.create();
+    }
+
+    setSize(width, height) {
+        this.option.aspect = width / height;
+        this.projection = mat4.perspective(mat4.create(), this.option.fovy, this.option.aspect, this.option.near, this.option.far);
     }
 
     getPosition() {
@@ -236,6 +243,10 @@ export class TrackBallCamera extends Camera {
     setMouseSensibility(val) {
         this.mouseSensibility = val;
         return this;
+    }
+
+    setScrollSpeed(s) {
+        this.scrollSpeed = s;
     }
 
     setAngle(angle) {
