@@ -81,6 +81,10 @@ export class FrameBuffer {
 
         if(this.textures.color) this.textures.color.setTextureData(null, width, height);
         if(this.textures.depth) this.textures.depth.setTextureData(width, height);
+        if(this.depthBufferPointer) {
+            Display.ctx.bindRenderbuffer(Display.ctx.RENDERBUFFER, this.depthBufferPointer);
+            Display.ctx.renderbufferStorage(Display.ctx.RENDERBUFFER, Display.ctx.DEPTH_COMPONENT16, width, height);
+        }
     }
 
     clear(){

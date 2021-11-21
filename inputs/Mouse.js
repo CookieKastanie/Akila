@@ -26,6 +26,7 @@ export class Mouse {
 
         let domElem = window;
         if(Mouse.DOM_TARGET_CANVAS && Display.ctx) domElem = Display.ctx.canvas;
+        else if(Mouse.DOM_TARGET) domElem = Mouse.DOM_TARGET;
 
         domElem.addEventListener('mousedown', event => {
             event.preventDefault();
@@ -123,6 +124,7 @@ export class Mouse {
     }
 }
 
+Mouse.DOM_TARGET = null;
 Mouse.DOM_TARGET_CANVAS = false;
 
 Mouse.instance = null;
