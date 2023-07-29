@@ -52,8 +52,8 @@ export class Mouse {
 
         domElem.addEventListener('mousemove', event => {
             const rect = Mouse.domRef.getBoundingClientRect();
-            Mouse.instance.x = event.clientX - (rect.left + domElem.scrollX);
-            Mouse.instance.y = event.clientY - (rect.top + domElem.scrollY);
+            Mouse.instance.x = event.clientX - (rect.left + window.scrollX);
+            Mouse.instance.y = event.clientY - (rect.top + window.scrollY);
 
             Mouse.instance.movX += event.movementX;
             Mouse.instance.movY += event.movementY;
