@@ -68,6 +68,8 @@ class TextureBuffer {
         return this;
     }
 
+    generateMipmap() {}
+
     delete(){
         Display.ctx.deleteTexture(this.texture);
     }
@@ -119,6 +121,10 @@ export class Texture extends TextureBuffer {
 
         this.width = width;
         this.height = height;
+    }
+
+    generateMipmap() {
+        Display.ctx.generateMipmap(Display.ctx.TEXTURE_2D);
     }
 }
 
@@ -187,6 +193,10 @@ export class CubeMapTexture extends TextureBuffer {
 
         Display.ctx.activeTexture(Display.ctx.TEXTURE0 + this.unit);
         Display.ctx.bindTexture(Display.ctx.TEXTURE_CUBE_MAP, this.texture);
+    }
+
+    generateMipmap() {
+        Display.ctx.generateMipmap(Display.ctx.TEXTURE_CUBE_MAP);
     }
 }
 
