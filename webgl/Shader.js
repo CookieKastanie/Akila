@@ -25,6 +25,7 @@ export class Shader {
 
     fetchUniforms() {
         this.uniformList = new Object();
+        this.uniformInfos = new Object();
         
         let uniform = null;
         let index = 0;
@@ -33,7 +34,7 @@ export class Shader {
         while(index < nbUnif){
             uniform = Display.ctx.getActiveUniform(this.program, index++);
             if(uniform) {
-                this.initUniformLocation(uniform.name);
+                this.initUniformLocation(uniform);
             }
         }
     }
@@ -74,12 +75,12 @@ export class Shader {
         this.program = program;
     }
 
-    initUniformLocation(nom){
-        nom = nom.replace(/\[0\]/,'');
-        
-        const pointer = Display.ctx.getUniformLocation(this.program, nom);
-        if(pointer) this.uniformList[nom] = pointer;
-        else console.error("Uniform '"+ nom +"' n'existe pas dans "+ this.name);
+    initUniformLocation(uniform){
+        const pointer = Display.ctx.getUniformLocation(this.program, uniform.name);
+        if(pointer) {
+            this.uniformList[uniform.name] = pointer;
+            this.uniformInfos[uniform.name] = uniform;
+        }
     }
 
 
@@ -107,65 +108,73 @@ export class Shader {
 
   //////////////////// Variables attributs
 
-    getAttribLocation(nom){
-        if(this.attributList[nom] === undefined){
-            const num = Display.ctx.getAttribLocation(this.program, nom);
+    getAttribLocation(name){
+        if(this.attributList[name] === undefined){
+            const num = Display.ctx.getAttribLocation(this.program, name);
 
             if(num < 0) {
-                console.error("L'attribut '"+ nom +"' n'existe pas, ou il n'est pas utilisé dans "+ this.name);
+                console.error("L'attribut '"+ name +"' n'existe pas, ou il n'est pas utilisé dans "+ this.name);
                 return;
             }
 
-            this.attributList[nom] = num;
+            this.attributList[name] = num;
         }
 
-        return this.attributList[nom];
+        return this.attributList[name];
     }
 
   //////////////////// Variables uniformes
 
-    getUniformLocation(nom){
-        return this.uniformList[nom];
+    getUniformLocation(name){
+        return this.uniformList[name];
     }
 
-    sendFloat(nom, value){
-        Display.ctx.uniform1f(this.getUniformLocation(nom), value);
+    getUniformInfos(name){
+        return this.uniformInfos[name];
     }
 
-    sendInt(nom, value){
-        Display.ctx.uniform1i(this.getUniformLocation(nom), value);
+    getUniformsInfos(){
+        return this.uniformInfos;
     }
 
-    sendIntVec(nom, value){
-        Display.ctx.uniform1iv(this.getUniformLocation(nom), value);
+    sendFloat(name, value){
+        Display.ctx.uniform1f(this.getUniformLocation(name), value);
     }
 
-    sendVec1(nom, value){
-        Display.ctx.uniform1fv(this.getUniformLocation(nom), value);
+    sendInt(name, value){
+        Display.ctx.uniform1i(this.getUniformLocation(name), value);
     }
 
-    sendVec2(nom, value){
-        Display.ctx.uniform2fv(this.getUniformLocation(nom), value);
+    sendIntVec(name, value){
+        Display.ctx.uniform1iv(this.getUniformLocation(name), value);
     }
 
-    sendVec3(nom, value){
-        Display.ctx.uniform3fv(this.getUniformLocation(nom), value);
+    sendVec1(name, value){
+        Display.ctx.uniform1fv(this.getUniformLocation(name), value);
     }
 
-    sendVec4(nom, value){
-        Display.ctx.uniform4fv(this.getUniformLocation(nom), value);
+    sendVec2(name, value){
+        Display.ctx.uniform2fv(this.getUniformLocation(name), value);
     }
 
-    sendMat2(nom, value){
-        Display.ctx.uniformMatrix2fv(this.getUniformLocation(nom), Display.ctx.FALSE, value);
+    sendVec3(name, value){
+        Display.ctx.uniform3fv(this.getUniformLocation(name), value);
     }
 
-    sendMat3(nom, value){
-        Display.ctx.uniformMatrix3fv(this.getUniformLocation(nom), Display.ctx.FALSE, value);
+    sendVec4(name, value){
+        Display.ctx.uniform4fv(this.getUniformLocation(name), value);
     }
 
-    sendMat4(nom, value){
-        Display.ctx.uniformMatrix4fv(this.getUniformLocation(nom), Display.ctx.FALSE, value);
+    sendMat2(name, value){
+        Display.ctx.uniformMatrix2fv(this.getUniformLocation(name), Display.ctx.FALSE, value);
+    }
+
+    sendMat3(name, value){
+        Display.ctx.uniformMatrix3fv(this.getUniformLocation(name), Display.ctx.FALSE, value);
+    }
+
+    sendMat4(name, value){
+        Display.ctx.uniformMatrix4fv(this.getUniformLocation(name), Display.ctx.FALSE, value);
     }
 }
 
