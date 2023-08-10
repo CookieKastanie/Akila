@@ -165,6 +165,18 @@ export class Shader {
         Display.ctx.uniform4fv(this.getUniformLocation(name), value);
     }
 
+    sendIVec2(name, value){
+        Display.ctx.uniform2iv(this.getUniformLocation(name), value);
+    }
+
+    sendIVec3(name, value){
+        Display.ctx.uniform3iv(this.getUniformLocation(name), value);
+    }
+
+    sendIVec4(name, value){
+        Display.ctx.uniform4iv(this.getUniformLocation(name), value);
+    }
+
     sendMat2(name, value){
         Display.ctx.uniformMatrix2fv(this.getUniformLocation(name), Display.ctx.FALSE, value);
     }
