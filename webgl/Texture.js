@@ -65,7 +65,13 @@ class TextureBuffer {
 
         Display.ctx.pixelStorei(Display.ctx.UNPACK_FLIP_Y_WEBGL, params.flipY);
 
+        this.params = params;
+
         return this;
+    }
+
+    getParameters() {
+        return {...this.params};
     }
 
     generateMipmap() {}
@@ -183,6 +189,8 @@ export class CubeMapTexture extends TextureBuffer {
         Display.ctx.texParameteri(Display.ctx.TEXTURE_CUBE_MAP, Display.ctx.TEXTURE_WRAP_T, Display.ctx.CLAMP_TO_EDGE);
         Display.ctx.texParameteri(Display.ctx.TEXTURE_CUBE_MAP, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
         Display.ctx.texParameteri(Display.ctx.TEXTURE_CUBE_MAP, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
+
+        this.params = params;
 
         return this;
     }
