@@ -208,6 +208,77 @@ export class CubeMapTexture extends TextureBuffer {
     }
 }
 
+export class TextureArray extends TextureBuffer {
+    constructor(width, height, layerCount) {
+        super(width, height);
+
+        this.layerCount = layerCount;
+
+        Display.ctx.texImage3D(
+            Display.ctx.TEXTURE_2D_ARRAY,
+            0,
+            Display.ctx.RGBA,
+            width,
+            height,
+            layerCount,
+            0,
+            Display.ctx.RGBA,
+            Display.ctx.UNSIGNED_BYTE,
+            null
+        );
+    }
+
+    setTextureData(data, layer){
+        this.use();
+
+        Display.ctx.texSubImage3D(
+            Display.ctx.TEXTURE_2D_ARRAY,
+            0, // niveau du bitmap
+            0, 0, layer, // offets
+            this.width, this.height, 1, // size
+            Display.ctx.RGBA, //srcFormat
+            Display.ctx.UNSIGNED_BYTE, //srcType,
+            data
+        );
+    }
+
+    setParameters(params = {magFilter: Texture.LINEAR, minFilter: Texture.LINEAR, wrapS: Texture.REPEAT, wrapT: Texture.REPEAT, flipY: false}, ) {
+        params = {
+            magFilter: params.magFilter || Texture.LINEAR,
+            minFilter: params.minFilter || Texture.LINEAR,
+            wrapS: params.wrapS || Texture.REPEAT,
+            wrapT: params.wrapT || Texture.REPEAT,
+            flipY: params.flipY || false
+        };
+
+        this.use();
+
+        Display.ctx.texParameterf(Display.ctx.TEXTURE_2D_ARRAY, Display.ctx.TEXTURE_MAG_FILTER, Display.ctx[params.magFilter]);
+        Display.ctx.texParameterf(Display.ctx.TEXTURE_2D_ARRAY, Display.ctx.TEXTURE_MIN_FILTER, Display.ctx[params.minFilter]);
+
+        Display.ctx.texParameteri(Display.ctx.TEXTURE_2D_ARRAY, Display.ctx.TEXTURE_WRAP_S, Display.ctx[params.wrapS]);
+        Display.ctx.texParameteri(Display.ctx.TEXTURE_2D_ARRAY, Display.ctx.TEXTURE_WRAP_T, Display.ctx[params.wrapT]);
+
+        Display.ctx.pixelStorei(Display.ctx.UNPACK_FLIP_Y_WEBGL, params.flipY);
+
+        this.params = params;
+
+        return this;
+    }
+
+    use(){
+        //if(Texture.currentIds[this.unit] == this.id) return;
+        //Texture.currentIds[this.unit] = this.id;
+
+        Display.ctx.activeTexture(Display.ctx.TEXTURE0 + this.unit);
+        Display.ctx.bindTexture(Display.ctx.TEXTURE_2D_ARRAY, this.texture);
+    }
+
+    generateMipmap() {
+        Display.ctx.generateMipmap(Display.ctx.TEXTURE_2D_ARRAY);
+    }
+}
+
 Texture.idMax = 0;
 //Texture.currentIds = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
 

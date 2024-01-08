@@ -64,7 +64,9 @@ export class AVBO extends BufferObject {
         this.nbOfElement = 0;
       
         this.setData = AVBO.prototype.setNewData;
-        this.setData(data);
+        if(data !== null) {
+            this.setData(data);
+        }
     }
 
     addVertexAttribute(nbOfElement, attribLocation, offset = 0, step = 0, type = AVBO.FLOAT) {
@@ -101,7 +103,11 @@ export class AVBO extends BufferObject {
     use(){
         Display.ctx.bindBuffer(Display.ctx.ARRAY_BUFFER, this.pointer);
         for(const va of this.vertexAttribs) {
-            Display.ctx.vertexAttribPointer(va.attribLocation, va.nbOfElement, va.type, Display.ctx.FALSE, va.step, va.offset);
+            if(va.type === Display.ctx.FLOAT) {
+                Display.ctx.vertexAttribPointer(va.attribLocation, va.nbOfElement, va.type, Display.ctx.FALSE, va.step, va.offset);
+            } else {
+                Display.ctx.vertexAttribIPointer(va.attribLocation, va.nbOfElement, va.type, va.step, va.offset);
+            }
         }
     }
 }
@@ -147,6 +153,8 @@ IBO.STREAM_DRAW = VBO.STREAM_DRAW = BufferObject.STREAM_DRAW = "STREAM_DRAW";
 
 AVBO.BYTE = BufferObject.BYTE = "BYTE";
 AVBO.SHORT = BufferObject.SHORT = "SHORT";
+AVBO.INT = BufferObject.INT = "INT";
 AVBO.UNSIGNED_BYTE = BufferObject.UNSIGNED_BYTE = "UNSIGNED_BYTE";
 AVBO.UNSIGNED_SHORT = BufferObject.UNSIGNED_SHORT = "UNSIGNED_SHORT";
+AVBO.UNSIGNED_INT = BufferObject.UNSIGNED_INT = "UNSIGNED_INT";
 AVBO.FLOAT = BufferObject.FLOAT = "FLOAT";
